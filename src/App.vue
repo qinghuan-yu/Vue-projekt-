@@ -1,5 +1,26 @@
 ﻿<template>
   <div id="app" @wheel="handleScroll">
+    <div class="sidebar-toggle" @click="toggleSidebar">
+      按钮1
+    </div>
+
+    <div
+      class="overlay"
+      v-if="isSidebarOpen"
+      @click="toggleSidebar"
+    ></div>
+
+    <nav :class="['sidebar', { 'is-open': isSidebarOpen }]">
+      <div class="sidebar-content">
+        <div class="vertical-line"></div>
+        <div class="sidebar-buttons">
+          <button class="sidebar-button">按钮2</button>
+          <button class="sidebar-button">按钮3</button>
+          <button class="sidebar-button">按钮4</button>
+        </div>
+      </div>
+    </nav>
+
     <div class="navbar">
       <router-link
         v-for="(item, index) in navItems"
@@ -50,6 +71,7 @@ export default {
   name: 'App',
   data() {
     return {
+      isSidebarOpen: false,
       showDescription: false,
       navItems: [
         { to: '/', name: '首页', en_name: 'Index' },
@@ -62,6 +84,9 @@ export default {
     }
   },
   methods: {
+    toggleSidebar() {
+      this.isSidebarOpen = !this.isSidebarOpen
+    },
     handleScroll(event) {
       const delta = Math.sign(event.deltaY)
       const currentIndex = this.navItems.findIndex(item => item.to === this.$route.path)
@@ -83,9 +108,116 @@ export default {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  position: relative;
 }
 
 .transition-viewport {
   position: relative;
+  flex-grow: 1;
+  z-index: 1;
 }
+
+.sidebar-toggle {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar {
+  position: fixed;
+  left: -300px; /* Initially hidden */
+  top: 0;
+  height: 100%;
+  width: 300px;
+  background: transparent;
+  z-index: 1000;
+  transition: left 0.4s ease;
+  display: flex;
+}
+
+.sidebar.is-open {
+  left: 0;
+}
+
+.sidebar-content {
+  display: flex;
+  width: 100%;
+  position: relative;
+}
+
+.vertical-line {
+  width: 2px;
+  background-color: #fff;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  bottom: 0;
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+}
+
+.sidebar.is-open .vertical-line {
+  transform: translateX(0);
+}
+
+.sidebar-buttons {
+  margin-top: 100px; /* Adjust as needed */
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-button {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.sidebar.is-open .sidebar-button {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.sidebar.is-open .sidebar-button:nth-child(1) {
+  transition-delay: 0.1s;
+}
+.sidebar.is-open .sidebar-button:nth-child(2) {
+  transition-delay: 0.2s;
+}
+.sidebar.is-open .sidebar-button:nth-child(3) {
+  transition-delay: 0.3s;
+}
+
+/* Adjust main content when sidebar is open */
+.page-container {
+  transition: filter 0.4s ease;
+}
+
+.sidebar.is-open + .navbar + .page-container {
+  filter: grayscale(80%);
+}
+
 </style>
