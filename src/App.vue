@@ -1,22 +1,24 @@
 ﻿<template>
   <div id="app" @wheel="handleScroll">
     <div class="sidebar-toggle" @click="toggleSidebar">
-      按钮1
+      MENU
     </div>
 
-    <div
-      class="overlay"
-      v-if="isSidebarOpen"
-      @click="toggleSidebar"
-    ></div>
+    <transition name="fade">
+      <div
+        class="overlay"
+        v-if="isSidebarOpen"
+        @click="toggleSidebar"
+      ></div>
+    </transition>
 
     <nav :class="['sidebar', { 'is-open': isSidebarOpen }]">
       <div class="sidebar-content">
         <div class="vertical-line"></div>
         <div class="sidebar-buttons">
-          <button class="sidebar-button">按钮2</button>
-          <button class="sidebar-button">按钮3</button>
-          <button class="sidebar-button">按钮4</button>
+          <button class="sidebar-button">介绍</button>
+          <button class="sidebar-button">合作</button>
+          <button class="sidebar-button">联系方式</button>
         </div>
       </div>
     </nav>
@@ -123,10 +125,11 @@ export default {
   left: 20px;
   z-index: 1001;
   cursor: pointer;
-  background: #fff;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
+  background: none;
+  border: none;
+  font-family: 'Font', sans-serif;
+  font-size: 24px;
+  color: #fff;
 }
 
 .overlay {
@@ -137,15 +140,24 @@ export default {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 999;
-  transition: background-color 0.3s ease;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .sidebar {
   position: fixed;
-  left: -300px; /* Initially hidden */
+  left: -350px; /* Initially hidden */
   top: 0;
   height: 100%;
-  width: 300px;
+  width: 350px;
   background: transparent;
   z-index: 1000;
   transition: left 0.4s ease;
@@ -179,17 +191,20 @@ export default {
 
 .sidebar-buttons {
   margin-top: 100px; /* Adjust as needed */
-  margin-left: 20px;
+  margin-left: 40px;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
 .sidebar-button {
-  background: #fff;
-  border: 1px solid #ccc;
-  padding: 10px 20px;
-  margin-bottom: 10px;
-  border-radius: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 25px;
+  font-family: 'Font', sans-serif;
+  font-size: 22px;
+  color: #fff;
   cursor: pointer;
   transform: translateX(-100%);
   opacity: 0;
@@ -216,8 +231,7 @@ export default {
   transition: filter 0.4s ease;
 }
 
-.sidebar.is-open + .navbar + .page-container {
+.sidebar.is-open ~ .page-container {
   filter: grayscale(80%);
 }
-
 </style>
