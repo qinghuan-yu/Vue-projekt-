@@ -6,21 +6,14 @@
       </div>
       <div style="clear: both;"></div>
     </div>
-    <div class="lizi">
-      <canvas id="akCanvas"></canvas>
-      <ParticleCanvas />
-    </div>
     <div style="clear: both;"></div>
   </div>
 </template>
 
 <script>
-import ParticleCanvas from "@/components/ParticleCanvas.vue";
-
 export default {
   name: "IndexPage",
-  // eslint-disable-next-line vue/no-unused-components
-  components: { ParticleCanvas },
+  components: {},
 
 };
 // eslint-disable-next-line no-unused-vars

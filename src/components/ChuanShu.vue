@@ -6,9 +6,6 @@
       </div>
       <div style="clear: both;"></div>
     </div>
-    <div class="vector-container">
-      <img src="@/assets/biaoyu/1.svg" class="vector-image" />
-    </div>
     <div style="clear: both;"></div>
   </div>
 </template>
