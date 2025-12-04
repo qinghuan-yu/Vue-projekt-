@@ -18,6 +18,7 @@
         <div class="sidebar-buttons">
           <button class="sidebar-button">介绍</button>
           <button class="sidebar-button">合作</button>
+          <button class="sidebar-button" @click="navigateToSaturn">3D星系</button>
           <button class="sidebar-button">联系方式</button>
         </div>
       </div>
@@ -98,6 +99,10 @@ export default {
     },
     toggleDescription() {
       this.showDescription = !this.showDescription
+    },
+    navigateToSaturn() {
+      this.$router.push('/saturn-system');
+      this.isSidebarOpen = false;
     },
   },
 }
@@ -238,6 +243,9 @@ export default {
 }
 .sidebar.is-open .sidebar-button:nth-child(3) {
   transition-delay: 0.5s; /* 第三个按钮的延迟 */
+}
+.sidebar.is-open .sidebar-button:nth-child(4) {
+  transition-delay: 0.7s; /* a new button's delay */
 }
 
 /* 当侧边栏打开时，调整主内容区域的样式 */

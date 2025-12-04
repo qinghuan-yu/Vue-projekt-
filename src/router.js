@@ -8,6 +8,7 @@ import GouWu from './components/GouWu.vue';
 import MinTai from './components/MinTai.vue';
 import SanQin from './components/SanQin.vue';
 import YuMen from './components/YuMen.vue';
+import SaturnSystem from './components/SaturnSystem.vue';
 
 export default createRouter({
   history: createWebHashHistory(),
@@ -40,6 +41,11 @@ export default createRouter({
       path: '/玉门',
       name: '玉门',
       component: YuMen
+    },
+    {
+      path: '/saturn-system',
+      name: 'SaturnSystem',
+      component: SaturnSystem
     }
   ]
 });
