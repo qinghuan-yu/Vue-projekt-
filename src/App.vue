@@ -163,13 +163,13 @@ export default {
     },
     createParticles() {
       this.particles = [];
-      const count = 150;
+      const count = 200;
       for (let i = 0; i < count; i++) {
         this.particles.push({
           x: Math.random() * this.canvas.width,
           y: Math.random() * this.canvas.height,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
+          vx: (Math.random() - 0.5) * 0.6,
+          vy: (Math.random() - 0.5) * 0.6,
           size: Math.random() * 2.5,
           color: Math.random() > 0.9 ? '#61b1d6' : (Math.random() > 0.5 ? '#333' : '#555')
         });
