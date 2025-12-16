@@ -6,9 +6,11 @@ export function usePixiApp() {
   const graphics = new Graphics();
   
   // --- 参数配置 ---
-  const PARTICLE_COUNT = 300;          // 粒子数量
+  const PARTICLE_COUNT = 300;          // 最终粒子总数
+  const PARTICLE_GROWTH_TIME = 8000;   // [新增] 粒子数量从0增长到300所需的时间 (毫秒)
+  
   const MAX_CONNECTION_DISTANCE = 200; // 连线阈值
-  const DISTANCE_GROWTH_TIME = 10000;   // 连线范围展开时间
+  const DISTANCE_GROWTH_TIME = 10000;  // 连线范围展开时间
   
   const LINE_COLOR = 0x61b1d6;       
   const SCREEN_PADDING = 150; 
@@ -19,17 +21,18 @@ export function usePixiApp() {
   const COLOR_DARK_2 = 0x555555;
 
   // 鼠标交互参数
-  const MOUSE_RADIUS = 60;     // 鼠标影响范围加大，手感更明显
-  const MOUSE_FORCE = 2;      // 斥力强度
-  const RETURN_SPEED = 0.04;    // 粒子回归原位置的阻尼系数
+  const MOUSE_RADIUS = 60;     
+  const MOUSE_FORCE = 2;      
+  const RETURN_SPEED = 0.04;    
 
   let startTime = null; 
   let mouseX = -9999;
   let mouseY = -9999;
 
   class Particle {
-    constructor(w, h) {
-      this.init(w, h, true); 
+    // [修改] 构造函数增加 initial 参数，默认为 false (非初始粒子需淡入)
+    constructor(w, h, initial = false) {
+      this.init(w, h, initial); 
     }
 
     init(w, h, initial = false) {
@@ -37,7 +40,6 @@ export function usePixiApp() {
       this.baseVx = (Math.random() - 0.5) * 0.6;
       this.baseVy = (Math.random() - 0.5) * 0.6;
       
-      // 当前速度 (会被斥力改变)
       this.vx = this.baseVx;
       this.vy = this.baseVy;
 
@@ -56,28 +58,26 @@ export function usePixiApp() {
         this.maxAlpha = 0.4;
       }
 
-      // 3. 呼吸效果参数 (新增)
-      // 随机相位，保证粒子不同时闪烁
+      // 3. 呼吸效果参数
       this.breathPhase = Math.random() * Math.PI * 2; 
-      // 呼吸速度 (0.02 ~ 0.05)
       this.breathSpeed = 0.02 + Math.random() * 0.03; 
-      // 呼吸幅度 (相对于 maxAlpha 的比例)
       this.breathAmp = 0.3 + Math.random() * 0.2; 
 
       this.x = Math.random() * w;
       this.y = Math.random() * h;
 
+      // 如果是 initial=true (比如调整窗口大小时保留的粒子)，则直接显示
+      // 如果是 initial=false (动态生成的)，则从0开始淡入
       this.fadeInFactor = initial ? 1 : 0;
-      this.currentRenderAlpha = 0; // 最终用于渲染的透明度
+      this.currentRenderAlpha = 0; 
     }
 
     update(w, h) {
       // --- A. 鼠标斥力逻辑 ---
       const dx = this.x - mouseX;
       const dy = this.y - mouseY;
-      const distSq = dx * dx + dy * dy; // 使用平方距离减少开方运算，稍微优化性能
+      const distSq = dx * dx + dy * dy; 
 
-      // 如果在鼠标范围内 (200*200 = 40000)
       if (distSq < MOUSE_RADIUS * MOUSE_RADIUS) {
         const dist = Math.sqrt(distSq);
         const forceFactor = (MOUSE_RADIUS - dist) / MOUSE_RADIUS;
@@ -87,7 +87,7 @@ export function usePixiApp() {
         this.vy += Math.sin(angle) * forceFactor * MOUSE_FORCE;
       }
 
-      // --- B. 速度回归 (弹性阻尼) ---
+      // --- B. 速度回归 ---
       this.vx += (this.baseVx - this.vx) * RETURN_SPEED;
       this.vy += (this.baseVy - this.vy) * RETURN_SPEED;
 
@@ -108,11 +108,9 @@ export function usePixiApp() {
       if (this.y < 0) edgeFadeFactor = Math.min(1, 1 - Math.abs(this.y) / SCREEN_PADDING);
       else if (this.y > h) edgeFadeFactor = Math.min(1, 1 - (this.y - h) / SCREEN_PADDING);
 
-      // 呼吸正弦波: 结果在 (1 - amp) 到 1 之间波动
       this.breathPhase += this.breathSpeed;
       const breathFactor = 1 - (Math.sin(this.breathPhase) * 0.5 + 0.5) * this.breathAmp;
 
-      // 综合计算最终透明度
       this.currentRenderAlpha = this.maxAlpha * edgeFadeFactor * this.fadeInFactor * breathFactor;
 
       // --- E. 边界重置 ---
@@ -123,16 +121,16 @@ export function usePixiApp() {
         this.y > h + SCREEN_PADDING;
 
       if (isDead) {
+        // 重置时视为新生成的，稍微淡入一下看起来更自然，也可以设为 true 立即出现
         this.init(w, h, false); 
       }
     }
   }
 
-  function createParticles(width, height) {
-    particles.length = 0;
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push(new Particle(width, height));
-    }
+  // [修改] 现在这个函数只负责清空数组，不再一次性填满
+  // 填充逻辑移交给了 animate 函数
+  function createParticles() {
+    particles.length = 0; 
   }
 
   function animate() {
@@ -141,16 +139,32 @@ export function usePixiApp() {
     if (startTime === null) startTime = performance.now();
     const now = performance.now();
     const elapsed = now - startTime;
-    // 缓动展开连线距离
-    const progress = Math.min(elapsed / DISTANCE_GROWTH_TIME, 1);
-    const easeProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease out
-    const currentConnectionDistance = easeProgress * MAX_CONNECTION_DISTANCE;
 
-    graphics.clear();
+    // --- 1. 连线距离缓动 ---
+    const distProgress = Math.min(elapsed / DISTANCE_GROWTH_TIME, 1);
+    const easeDist = 1 - Math.pow(1 - distProgress, 3); 
+    const currentConnectionDistance = easeDist * MAX_CONNECTION_DISTANCE;
+
+    // --- 2. [新增] 粒子数量缓动 ---
+    // 计算当前时刻应该有多少个粒子
+    const countProgress = Math.min(elapsed / PARTICLE_GROWTH_TIME, 1);
+    // 使用 Cubic Ease Out 让增长曲线更自然（前期快，后期慢）
+    const easeCount = 1 - Math.pow(1 - countProgress, 3);
+    const currentTargetCount = Math.floor(easeCount * PARTICLE_COUNT);
+
     const w = app.screen.width;
     const h = app.screen.height;
 
-    // 1. 更新并绘制粒子
+    // 如果当前粒子数少于目标数，补齐粒子
+    // 每次循环补充，直到达到当前时刻应有的数量
+    while (particles.length < currentTargetCount) {
+        // 传入 false，让新产生的粒子执行 fade-in 动画
+        particles.push(new Particle(w, h, false));
+    }
+
+    graphics.clear();
+    
+    // --- 3. 更新并绘制粒子 ---
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
       p.update(w, h);
@@ -163,13 +177,11 @@ export function usePixiApp() {
 
     if (currentConnectionDistance < 5) return;
 
-    // 2. 绘制连线
-    // 使用双重循环检查距离
+    // --- 4. 绘制连线 ---
     for (let i = 0; i < particles.length; i++) {
       const p1 = particles[i];
       if (p1.currentRenderAlpha <= 0.05) continue;
 
-      // j = i + 1 避免重复连线
       for (let j = i + 1; j < particles.length; j++) {
         const p2 = particles[j];
         if (p2.currentRenderAlpha <= 0.05) continue;
@@ -177,15 +189,12 @@ export function usePixiApp() {
         const dx = p1.x - p2.x;
         const dy = p1.y - p2.y;
         
-        // 简单的包围盒检测，优化性能
         if (Math.abs(dx) > currentConnectionDistance || Math.abs(dy) > currentConnectionDistance) continue;
 
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < currentConnectionDistance) {
-          // 连线透明度：距离越近越亮，且受到两端粒子本身透明度(含呼吸)的影响
           const distAlpha = 1 - (dist / currentConnectionDistance);
-          // 取两个粒子透明度的较小值，乘上距离系数
           const finalAlpha = distAlpha * Math.min(p1.currentRenderAlpha, p2.currentRenderAlpha) * 0.8;
 
           if (finalAlpha > 0.02) {
@@ -202,7 +211,6 @@ export function usePixiApp() {
     }
   }
 
-  // 使用 window 监听，确保鼠标在UI元素上时背景依然有反应
   const handleMouseMove = (e) => {
     if (!app || !app.canvas) return;
     const rect = app.canvas.getBoundingClientRect();
@@ -233,13 +241,15 @@ export function usePixiApp() {
 
     createParticles(app.screen.width, app.screen.height);
     
-    // 监听 window 的鼠标移动，体验更好
     window.addEventListener('mousemove', handleMouseMove);
-    // 监听 canvas 的移出（或者也可以监听 window 的 mouseout）
     document.body.addEventListener('mouseleave', handleMouseLeave);
     
     app.renderer.on('resize', () => {
+       // 窗口变化时重置粒子数组，如果想要重播动画，可以把 startTime 设为 null
+       // 如果希望窗口变化时直接铺满（不重播动画），则不需要操作，只需要 reset 边界逻辑
+       // 这里为了简单，选择清空重来
        createParticles(app.screen.width, app.screen.height);
+       startTime = null; // 可选：加上这行会在resize时重新播放增长动画
     });
 
     app.ticker.add(animate);

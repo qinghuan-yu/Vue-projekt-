@@ -31,7 +31,7 @@
 
         <div class="card-header" ref="cardHeaderRef" style="opacity: 0; visibility: hidden;">
             <div class="status-row"><div class="status-dot"></div><span class="status-text">SYSTEM // ONLINE</span></div>
-            <h1 class="glitch-title">INFO<br><span style="color: var(--color-accent);">DATA_STREAM</span></h1>
+            <h1 class="glitch-title">I am Relic<br><span style="color: var(--color-accent);">I am Ark</span></h1>
         </div>
 
         <div class="clipper-box" ref="clipperRef" style="overflow: hidden; position: relative;">
@@ -256,32 +256,31 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  z-index: 100;
+  flex-direction: column; /* 关键：改为垂直方向分布，即上下排列 */
+  align-items: center;    /* 水平居中 */
+  justify-content: center;
+  z-index: 999;
   text-align: center;
 }
 
+/* 中文文本：去掉竖排属性，增加字间距以保持科技感 */
 .loader-text-zh {
-  color: var(--color-text-main);
-  font-size: 1rem;
-  letter-spacing: 0.2em;
-  padding-left: 0.2em;
-  position: absolute;
-  top: -24px;
-  background-color: var(--color-bg);
-  padding: 0 12px;
+  /* writing-mode: vertical-rl;  <-- 删除或注释掉这一行 */
+  writing-mode: horizontal-tb; /* 强制设为横向 */
+  
+  font-size: 24px;       /* 根据需要调整大小 */
+  font-weight: bold;
+  letter-spacing: 0.5em; /* 增加字间距，横向排版时这样更有设计感 */
+  margin-bottom: 10px;   /* 中文和英文之间的间距 */
+  color: #fff;           /* 确保颜色正确 */
+  text-shadow: 0 0 10px rgba(97, 177, 214, 0.5); /* 保持发光效果 */
 }
 
+/* 英文文本：通常不需要大改，保持字间距即可 */
 .loader-text-en {
-  color: var(--color-text-dim);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
+  font-size: 12px;
   letter-spacing: 0.3em;
-  padding-left: 0.3em;
-  position: absolute;
-  top: 5px;
+  color: rgba(255, 255, 255, 0.6); /* 假设你用了等宽字体 */
 }
 
 /* 侧边栏 */
