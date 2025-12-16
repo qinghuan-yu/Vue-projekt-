@@ -1,7 +1,8 @@
 <template>
   <div>
     <h2 v-scramble>Music Collaboration</h2>
-    <p v-scramble>Looking for collaborators for electronic music production and sound design.</p>
+    <p v-scramble>Jpop制作</p>
+    <p v-scramble>尝试complextro</p>
   </div>
 </template>
 <script>

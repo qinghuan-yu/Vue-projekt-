@@ -58,14 +58,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'; // Removed unused 'watch'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import gsap from 'gsap';
 import { usePixiApp } from '../composables/usePixiApp.js';
+import qqQrCode from '@/assets/QQ.png';
+import wechatQrCode from '@/assets/WeChat.png';
 
 const router = useRouter();
 const route = useRoute();
 const { init, destroy } = usePixiApp();
+
+let morphToShapes = null;
 
 // Refs
 const pixiContainer = ref(null);
@@ -131,9 +135,12 @@ const onEnter = (el, done) => {
   });
 };
 
-// --- 生命周期 ---
+// --- 生命周期与粒子系统 ---
 onMounted(async () => {
-  if (pixiContainer.value) await init(pixiContainer.value);
+  if (pixiContainer.value) {
+    const controls = await init(pixiContainer.value);
+    morphToShapes = controls.morphToShapes;
+  }
 
   gsap.set([sidebarRef.value, menuTriggerRef.value, timelineBarRef.value, cardHeaderRef.value], { autoAlpha: 0 });
   gsap.set(clipperRef.value, { height: 0 });
@@ -155,6 +162,42 @@ onMounted(async () => {
     
   window.addEventListener('resize', handleResize);
 });
+
+watch(route, (newRoute) => {
+    if (!morphToShapes) return;
+
+    if (newRoute.path.includes('/contact')) {
+        const shapes = [
+          {
+            source: qqQrCode,
+            options: { type: 'image', scale: 0.8 }
+          },
+          {
+            source: wechatQrCode,
+            options: { type: 'image', scale: 0.8 }
+          },
+          {
+            source: 'Reliarc.me@outlook.com',
+            options: { type: 'text', fontSize: 48, fontFamily: 'Arial', color: '#61b1d6' }
+          }
+        ];
+        morphToShapes(shapes);
+    } else if (newRoute.path.includes('/collab/music')) {
+        morphToShapes([
+            {
+                source: 'MUSIC',
+                options: {
+                    type: 'text',
+                    fontSize: 120,
+                    fontFamily: 'Space Grotesk, sans-serif'
+                }
+            }
+        ]);
+    } 
+    else {
+        morphToShapes([]);
+    }
+}, { immediate: true, deep: true });
 
 onUnmounted(() => {
   destroy();

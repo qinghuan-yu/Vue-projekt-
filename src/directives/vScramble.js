@@ -2,7 +2,7 @@ class ScrambleText {
   constructor(el) {
     this.el = el;
     this.originalText = el.textContent;
-    this.chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[]{};:,.<>?';
+    this.chars = '!@#$%^&*()-_=+[]{};:,.<>?';
     this.animationFrameId = null;
     this.frame = 0;
     this.queue = [];

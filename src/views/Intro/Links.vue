@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h2 v-scramble>Links & Resources</h2>
-    <p v-scramble>A collection of my projects and profiles.</p>
+    <h2 v-scramble>Links</h2>
+    <h2 v-scramble>Collection of projects and profiles</h2>
     <div class="links-container">
       <div v-for="repo in repositories" :key="repo.name" class="link-item">
         <a :href="repo.url" target="_blank" rel="noopener noreferrer" v-scramble>{{ repo.name }}</a>

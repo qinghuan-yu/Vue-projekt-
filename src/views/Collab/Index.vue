@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Collab Section</h2>
+    <h2>Collab</h2>
     <router-view />
   </div>
 </template>

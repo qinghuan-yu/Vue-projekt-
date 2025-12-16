@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 v-scramble>Development Collaboration</h2>
-    <p v-scramble>Open to freelance projects, open-source contributions, and creative coding.</p>
+    <p v-scramble>嵌入式尝试中</p>
   </div>
 </template>
 <script>

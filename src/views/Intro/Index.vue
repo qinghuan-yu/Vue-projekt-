@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Intro Section</h2>
+    <h2>INFO</h2>
     <router-view />
   </div>
 </template>
