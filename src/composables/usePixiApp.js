@@ -8,7 +8,7 @@ export function usePixiApp() {
   // --- 参数配置 ---
   const PARTICLE_COUNT = 300;          // 粒子数量
   const MAX_CONNECTION_DISTANCE = 200; // 连线阈值
-  const DISTANCE_GROWTH_TIME = 15000;   // 连线范围展开时间
+  const DISTANCE_GROWTH_TIME = 5000;   // 连线范围展开时间
   
   const LINE_COLOR = 0x61b1d6;       
   const SCREEN_PADDING = 150; 

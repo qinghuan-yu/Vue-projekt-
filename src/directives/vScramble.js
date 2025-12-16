@@ -3,7 +3,7 @@ class ScrambleText {
   constructor(el) {
     this.el = el;
     this.originalText = el.textContent;
-    this.chars = '!<>-_\\/[]{}—=+*^?#________';
+    this.chars = '!<>-_\\/[]{}—=+*^?#@$%&';
     this.animationFrameId = null;
     this.frame = 0;
     this.queue = [];
@@ -21,8 +21,8 @@ class ScrambleText {
     for (let i = 0; i < length; i++) {
       const from = oldText[i] || '';
       const to = newText[i] || '';
-      const start = Math.floor(Math.random() * 40);
-      const end = start + Math.floor(Math.random() * 40);
+      const start = Math.floor(Math.random() * 80);
+      const end = start + Math.floor(Math.random() * 80);
       this.queue.push({ from, to, start, end });
     }
 
