@@ -28,6 +28,7 @@
         <div 
           v-for="(item, index) in rightNavItems" 
           :key="index"
+          :ref="el => navNodeRefs[item.to] = el"
           :class="['nav-node', { active: currentRoute === item.to }]"
           @click="navigate(item.to)"
         >
@@ -54,7 +55,16 @@
         </h1>
         
         <div class="view-container">
-           <router-view />
+          <router-view v-slot="{ Component }">
+            <transition 
+              :css="false" 
+              mode="out-in" 
+              @leave="onLeave"
+              @enter="onEnter"
+            >
+              <component :is="Component" :key="route.path" />
+            </transition>
+          </router-view>
         </div>
       </div>
     </section>
@@ -65,16 +75,76 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, onBeforeUpdate } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import gsap from 'gsap';
 import { usePixiApp } from '../composables/usePixiApp.js';
 
 const router = useRouter();
 const route = useRoute();
 
-// --- 状态与数据 ---
+// --- Animations ---
+const transitionType = ref('parent');
+
+const onLeave = (el, done) => {
+  if (transitionType.value === 'parent') {
+    // Parent (glitch) animation
+    const tl = gsap.timeline({ onComplete: done });
+    tl.to(el, {
+      skewX: 20,
+      duration: 0.1,
+      ease: 'power2.in',
+    });
+    tl.to(el, {
+      opacity: 0,
+      filter: 'blur(5px)',
+      x: -50,
+      duration: 0.3,
+      ease: 'power2.in',
+    }, '>-0.05');
+  } else {
+    // Child (fast fade) animation
+    gsap.to(el, { opacity: 0, duration: 0.15, onComplete: done });
+  }
+};
+
+const onEnter = (el, done) => {
+  if (transitionType.value === 'parent') {
+    // Parent (unlock) animation
+    gsap.fromTo(el, 
+      { opacity: 0, scale: 0.95, x: 50 },
+      {
+        opacity: 1,
+        scale: 1,
+        x: 0,
+        duration: 0.5,
+        ease: 'power2.out',
+        onComplete: done
+      }
+    );
+  } else {
+    // Child (fast fade) animation
+    gsap.fromTo(el, 
+      { opacity: 0 }, 
+      {
+        opacity: 1,
+        duration: 0.15,
+        onComplete: done
+      }
+    );
+  }
+};
+
+
+// --- State & Data ---
 const isSidebarOpen = ref(false);
 let isThrottled = false;
+const navNodeRefs = ref({});
+
+onBeforeUpdate(() => {
+  navNodeRefs.value = {};
+});
+
 
 const handleWheel = (event) => {
   if (isSidebarOpen.value) return;
@@ -133,7 +203,31 @@ const rightNavItems = computed(() => {
 
 const currentRoute = computed(() => route.path);
 
-// --- 交互逻辑 ---
+// --- Sidebar Ping & Transition Logic ---
+watch(route, (to, from) => {
+  // Determine transition type
+  const toTop = to.path.split('/')[1];
+  const fromTop = from ? from.path.split('/')[1] : null;
+  
+  if (fromTop && toTop === fromTop) {
+    transitionType.value = 'child';
+  } else {
+    transitionType.value = 'parent';
+  }
+
+  // Sidebar ping animation
+  const nodeEl = navNodeRefs.value[to.path];
+  if (nodeEl) {
+    const circle = nodeEl.querySelector('.nav-node-circle');
+    if (circle) {
+      gsap.timeline()
+        .to(circle, { scale: 1.5, duration: 0.2, ease: 'power2.out' })
+        .to(circle, { scale: 1, duration: 0.3, ease: 'elastic.out(1, 0.3)' });
+    }
+  }
+}, { immediate: true });
+
+// --- Interactions ---
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
 };
@@ -150,7 +244,7 @@ const navigate = (path) => {
   }
 };
 
-// --- PixiJS 集成 ---
+// --- PixiJS Integration ---
 const pixiContainer = ref(null);
 const { init, destroy } = usePixiApp();
 
