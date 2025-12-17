@@ -5,50 +5,53 @@
     <div :class="['sidebar', { open: isSidebarOpen }]" ref="sidebarRef" style="opacity: 0; visibility: hidden;">
       <div class="sidebar-line"></div>
       <router-link to="/intro" class="sidebar-item"><span>介绍</span><span class="sidebar-sub">INTRO</span></router-link>
-      <router-link to="/collab" class="sidebar-item"><span>合作</span><span class="sidebar-sub">COLLAB</span></router-link>
-      <router-link to="/contact" class="sidebar-item"><span>联系方式</span><span class="sidebar-sub">CONTACT</span></router-link>
+      <router-link to="/collab" class="sidebar-item"><span>合作</span><span
+          class="sidebar-sub">COLLAB</span></router-link>
+      <router-link to="/contact" class="sidebar-item"><span>联系方式</span><span
+          class="sidebar-sub">CONTACT</span></router-link>
     </div>
 
-    <div class="menu-trigger" @click="toggleSidebar" ref="menuTriggerRef" style="opacity: 0; visibility: hidden;">MENU</div>
+    <div class="menu-trigger" @click="toggleSidebar" ref="menuTriggerRef" style="opacity: 0; visibility: hidden;">MENU
+    </div>
 
     <section id="main-stage" @click="handleStageClick">
       <div v-if="isIntroPlaying" ref="loaderTextRef" class="loader-container">
-        <div class="loader-text-zh">神经元正在连接</div>
+        <div class="loader-text-zh">神经元连接中</div>
         <div class="loader-text-en">NEURAL CONNECTION ESTABLISHING</div>
       </div>
 
       <div class="timeline-bar" ref="timelineBarRef" style="opacity: 0; visibility: hidden;">
         <div class="timeline-line"></div>
-        <div v-for="(item, index) in rightNavItems" :key="index" :class="['nav-node', { active: currentRoute === item.to }]" @click="navigate(item.to)">
+        <div v-for="(item, index) in rightNavItems" :key="index"
+          :class="['nav-node', { active: currentRoute === item.to }]" @click="navigate(item.to)">
           <div class="nav-label"><span class="zh">{{ item.name }}</span><span class="en">{{ item.en_name }}</span></div>
           <div class="nav-node-circle"></div>
         </div>
       </div>
 
       <div class="content-card" :class="{ 'is-contact': isContactPage }" ref="contentCardRef">
-        <div class="corner tl"></div><div class="corner tr"></div>
-        <div class="corner bl"></div><div class="corner br"></div>
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
 
         <div class="card-header" ref="cardHeaderRef" style="opacity: 0; visibility: hidden;">
-            <div class="status-row"><div class="status-dot"></div><span class="status-text">SYSTEM // ONLINE</span></div>
-            <h1 class="glitch-title">I am Relic<br><span style="color: var(--color-accent);">I am Ark</span></h1>
+          <div class="status-row">
+            <div class="status-dot"></div><span class="status-text">SYSTEM // ONLINE</span>
+          </div>
+          <h1 class="glitch-title">I am Relic<br><span style="color: var(--color-accent);">I am Ark</span></h1>
         </div>
 
         <div class="clipper-box" ref="clipperRef" style="overflow: hidden; position: relative;">
-            <div ref="innerWrapperRef" style="position: relative;">
-                
-                <router-view v-slot="{ Component }">
-                    <transition 
-                        :css="false" 
-                        mode="out-in" 
-                        @leave="onLeave" 
-                        @enter="onEnter"
-                    >
-                        <component :is="Component" :key="route.path" />
-                    </transition>
-                </router-view>
+          <div ref="innerWrapperRef" style="position: relative;">
 
-            </div>
+            <router-view v-slot="{ Component }">
+              <transition :css="false" mode="out-in" @leave="onLeave" @enter="onEnter">
+                <component :is="Component" :key="route.path" />
+              </transition>
+            </router-view>
+
+          </div>
         </div>
       </div>
     </section>
@@ -96,11 +99,11 @@ const menuTriggerRef = ref(null);
 
 const timelineBarRef = ref(null);
 
-const contentCardRef = ref(null); 
+const contentCardRef = ref(null);
 
-const cardHeaderRef = ref(null);  
+const cardHeaderRef = ref(null);
 
-const clipperRef = ref(null);     
+const clipperRef = ref(null);
 
 const innerWrapperRef = ref(null);
 
@@ -130,15 +133,15 @@ const isContactPage = computed(() => route.path.includes('/contact'));
 
 const onLeave = (el, done) => {
 
-  gsap.to(el, { 
+  gsap.to(el, {
 
-      opacity: 0, 
+    opacity: 0,
 
-      duration: 0.3, 
+    duration: 0.3,
 
-      ease: "power2.in", 
+    ease: "power2.in",
 
-      onComplete: done 
+    onComplete: done
 
   });
 
@@ -158,57 +161,57 @@ const onEnter = (el, done) => {
 
     document.fonts.ready.then(() => {
 
-        if (!clipperRef.value || !innerWrapperRef.value) { done(); return; }
+      if (!clipperRef.value || !innerWrapperRef.value) { done(); return; }
 
 
 
-        const startHeight = clipperRef.value.offsetHeight;
-
-        
-
-        clipperRef.value.style.height = 'auto';
-
-        const targetHeight = innerWrapperRef.value.offsetHeight;
-
-        clipperRef.value.style.height = `${startHeight}px`;
+      const startHeight = clipperRef.value.offsetHeight;
 
 
 
-        const tl = gsap.timeline({
+      clipperRef.value.style.height = 'auto';
 
-            onComplete: () => {
+      const targetHeight = innerWrapperRef.value.offsetHeight;
 
-                if(clipperRef.value) clipperRef.value.style.height = 'auto';
-
-                done();
-
-            }
-
-        });
+      clipperRef.value.style.height = `${startHeight}px`;
 
 
 
-        tl.to(clipperRef.value, {
+      const tl = gsap.timeline({
 
-            height: targetHeight,
+        onComplete: () => {
 
-            duration: 0.5,
+          if (clipperRef.value) clipperRef.value.style.height = 'auto';
 
-            ease: "power3.inOut" 
+          done();
 
-        });
+        }
+
+      });
 
 
 
-        tl.to(el, {
+      tl.to(clipperRef.value, {
 
-            opacity: 1,
+        height: targetHeight,
 
-            duration: 0.4,
+        duration: 0.5,
 
-            ease: "power2.out"
+        ease: "power3.inOut"
 
-        }, "-=0.2");
+      });
+
+
+
+      tl.to(el, {
+
+        opacity: 1,
+
+        duration: 0.4,
+
+        ease: "power2.out"
+
+      }, "-=0.2");
 
     });
 
@@ -266,7 +269,7 @@ onMounted(async () => {
 
     .to([sidebarRef.value, menuTriggerRef.value, timelineBarRef.value, cardHeaderRef.value], { autoAlpha: 1, duration: 0.5, stagger: 0.1 });
 
-    
+
 
   window.addEventListener('resize', handleResize);
 
@@ -275,165 +278,27 @@ onMounted(async () => {
 
 
 watch(route, (newRoute) => {
-
     if (!morphToShapes) return;
 
-
-
-            if (newRoute.path.includes('/contact')) {
-
-
-
-                const shapes = [
-
-
-
-                  // QR Codes are disabled for now, but code is kept.
-
-
-
-                  // // 1. 左侧二维码 (WeChat)
-
-
-
-                  // {
-
-
-
-                  //   source: wechatQrCode,
-
-
-
-                  //   options: {
-
-
-
-                  //       type: 'image',
-
-
-
-                  //       scale: 0.35 // 调整缩放，0.3~0.4 通常比较合适
-
-
-
-                  //   }
-
-
-
-                  // },
-
-
-
-                  // // 2. 右侧二维码 (QQ)
-
-
-
-                  // {
-
-
-
-                  //   source: qqQrCode,
-
-
-
-                  //   options: {
-
-
-
-                  //       type: 'image',
-
-
-
-                  //       scale: 0.35 
-
-
-
-                  //   }
-
-
-
-                  // },
-
-
-
-                  // 3. 底部文字 (Email)
-
-
-
-                                    {
-
-
-
-                                      source: 'Reliarc.me@outlook.com',
-
-
-
-                                      options: {
-
-
-
-                                          type: 'text',
-
-
-
-                                          fontSize: 100, // 字体稍微小一点，显得精致
-
-
-
-                                          fontFamily: 'Arial, sans-serif',
-
-
-
-                                          color: '#61b1d6' // 科技蓝
-
-
-
-                                      }
-
-
-
-                                    }
-
-
-
-                ];
-
-
-
-                morphToShapes(shapes);
-
-
-
-            } else if (newRoute.path.includes('/collab/music')) {
-
-        morphToShapes([
-
+    // 只保留 Contact 页面的粒子聚合
+    if (newRoute.path.includes('/contact')) {
+        const shapes = [
             {
-
-                source: 'MUSIC',
-
+                source: 'Reliarc.me@outlook.com',
                 options: {
-
                     type: 'text',
-
-                    fontSize: 120,
-
-                    fontFamily: 'Space Grotesk, sans-serif'
-
+                    fontSize: 100, // 保持这个大字体以保证清晰度
+                    fontFamily: 'Arial, sans-serif',
+                    color: '#61b1d6'
                 }
-
             }
-
-        ]);
-
+        ];
+        morphToShapes(shapes);
     } 
-
+    // 其他所有页面（包括 intro, collab/music 等）都清空粒子，回归网络背景
     else {
-
         morphToShapes([]);
-
     }
-
 }, { immediate: true, deep: true });
 
 
@@ -450,11 +315,11 @@ onUnmounted(() => {
 
 const handleResize = () => {
 
-    if (!isIntroPlaying.value && clipperRef.value && innerWrapperRef.value) {
+  if (!isIntroPlaying.value && clipperRef.value && innerWrapperRef.value) {
 
-        clipperRef.value.style.height = 'auto';
+    clipperRef.value.style.height = 'auto';
 
-    }
+  }
 
 }
 
@@ -466,31 +331,31 @@ const currentRoute = computed(() => route.path);
 
 const rightNavItems = computed(() => {
 
-    const section = route.path.split('/')[1];
+  const section = route.path.split('/')[1];
 
-    if (section === 'intro') return [
+  if (section === 'intro') return [
 
-        { to: '/intro/personal', name: '个人', en_name: 'Personal' },
+    { to: '/intro/personal', name: '个人', en_name: 'Personal' },
 
-        { to: '/intro/skills', name: '技能', en_name: 'Skills' },
+    { to: '/intro/skills', name: '技能', en_name: 'Skills' },
 
-        { to: '/intro/ongoing', name: '项目', en_name: 'Ongoing' },
+    { to: '/intro/ongoing', name: '项目', en_name: 'Ongoing' },
 
-        { to: '/intro/finished', name: '作品', en_name: 'Finished' },
+    { to: '/intro/finished', name: '作品', en_name: 'Finished' },
 
-        { to: '/intro/links', name: '链接', en_name: 'Links' },
+    { to: '/intro/links', name: '链接', en_name: 'Links' },
 
-    ];
+  ];
 
-    if (section === 'collab') return [
+  if (section === 'collab') return [
 
-        { to: '/collab/music', name: '音乐', en_name: 'Music' },
+    { to: '/collab/music', name: '音乐', en_name: 'Music' },
 
-        { to: '/collab/dev', name: '开发', en_name: 'Dev' },
+    { to: '/collab/dev', name: '开发', en_name: 'Dev' },
 
-    ];
+  ];
 
-    return [];
+  return [];
 
 });
 
@@ -526,19 +391,19 @@ const handleWheel = (event) => {
 
   if (currentIndex === -1) return;
 
-  
+
 
   const direction = event.deltaY > 0 ? 1 : -1;
 
   let nextIndex = currentIndex + direction;
 
-  
+
 
   if (nextIndex < 0) nextIndex = 0;
 
   else if (nextIndex >= navItems.length) nextIndex = navItems.length - 1;
 
-  
+
 
   if (nextIndex !== currentIndex) navigate(navItems[nextIndex].to);
 
@@ -586,42 +451,54 @@ body {
 /* Loader */
 /* Loader - 修复重影问题：改为全屏黑色遮罩 */
 .loader-container {
-  position: fixed;        /* 1. 改为 fixed，确保锁死在屏幕上 */
+  position: fixed;
+  /* 1. 改为 fixed，确保锁死在屏幕上 */
   top: 0;
   left: 0;
-  width: 100vw;           /* 2. 宽度铺满 */
-  height: 100vh;          /* 3. 高度铺满 */
-  background-color: var(--color-bg); /* 4. 关键：加上黑色背景色，挡住下面内容 */
-  
+  width: 100vw;
+  /* 2. 宽度铺满 */
+  height: 100vh;
+  /* 3. 高度铺满 */
+  background-color: var(--color-bg);
+  /* 4. 关键：加上黑色背景色，挡住下面内容 */
+
   /* 布局保持居中 */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 9999;          /* 5. 确保层级最高 */
+  z-index: 9999;
+  /* 5. 确保层级最高 */
   text-align: center;
-  
+
   /* ⚠️ 注意：删掉了原本的 transform: translate(-50%, -50%)，因为全屏布局不需要这个偏移了 */
 }
 
 /* 中文文本：去掉竖排属性，增加字间距以保持科技感 */
 .loader-text-zh {
   /* writing-mode: vertical-rl;  <-- 删除或注释掉这一行 */
-  writing-mode: horizontal-tb; /* 强制设为横向 */
-  
-  font-size: 24px;       /* 根据需要调整大小 */
+  writing-mode: horizontal-tb;
+  /* 强制设为横向 */
+
+  font-size: 24px;
+  /* 根据需要调整大小 */
   font-weight: bold;
-  letter-spacing: 0.5em; /* 增加字间距，横向排版时这样更有设计感 */
-  margin-bottom: 10px;   /* 中文和英文之间的间距 */
-  color: #fff;           /* 确保颜色正确 */
-  text-shadow: 0 0 10px rgba(97, 177, 214, 0.5); /* 保持发光效果 */
+  letter-spacing: 0.5em;
+  /* 增加字间距，横向排版时这样更有设计感 */
+  margin-bottom: 10px;
+  /* 中文和英文之间的间距 */
+  color: #fff;
+  /* 确保颜色正确 */
+  text-shadow: 0 0 10px rgba(97, 177, 214, 0.5);
+  /* 保持发光效果 */
 }
 
 /* 英文文本：通常不需要大改，保持字间距即可 */
 .loader-text-en {
   font-size: 12px;
   letter-spacing: 0.3em;
-  color: rgba(255, 255, 255, 0.6); /* 假设你用了等宽字体 */
+  color: rgba(255, 255, 255, 0.6);
+  /* 假设你用了等宽字体 */
 }
 
 /* 侧边栏 */
@@ -882,10 +759,10 @@ body {
 
 /* Clipper 容器：动画核心 */
 .clipper-box {
-    overflow: hidden;
-    height: auto;
-    position: relative;
-    will-change: height;
+  overflow: hidden;
+  height: auto;
+  position: relative;
+  will-change: height;
 }
 
 /* 角落装饰 */
@@ -954,9 +831,17 @@ body {
 }
 
 @keyframes pulse {
-  0% { opacity: 0.3; }
-  50% { opacity: 1; }
-  100% { opacity: 0.3; }
+  0% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.3;
+  }
 }
 
 .glitch-title {
