@@ -86,23 +86,17 @@ const onLeave = (el, done) => {
 };
 // 2. 进入动画
 const onEnter = (el, done) => {
-  console.log('🎬 [MainLayout] onEnter 开始');
   gsap.set(el, { opacity: 0 });
   
   nextTick(() => {
-    console.log('⏭️ [MainLayout] nextTick');
     document.fonts.ready.then(() => {
-      console.log('✍️ [MainLayout] fonts.ready');
       if (!clipperRef.value || !innerWrapperRef.value) { done(); return; }
       
       const startHeight = clipperRef.value.offsetHeight;
-      console.log('📊 [MainLayout] 起始高度:', startHeight);
       
       // 使用 setTimeout 确保 vScramble 已完成同步高度设置
       // 增加延迟时间，确保所有子组件的 mounted 钩子都已执行
       setTimeout(() => {
-        console.log('⏰ [MainLayout] setTimeout 执行');
-        
         // 临时设置为 auto 以计算最终高度
         clipperRef.value.style.height = 'auto';
         
@@ -111,40 +105,12 @@ const onEnter = (el, done) => {
           // 使用 scrollHeight 获取包含所有内容的真实高度
           const targetHeight = innerWrapperRef.value.scrollHeight;
           
-          console.log('🎯 [MainLayout] 目标高度:', targetHeight);
-          console.log('📐 [MainLayout] innerWrapper 详细信息:', {
-            offsetHeight: innerWrapperRef.value.offsetHeight,
-            scrollHeight: innerWrapperRef.value.scrollHeight,
-            clientHeight: innerWrapperRef.value.clientHeight
-          });
-          
           // 恢复起始高度
           clipperRef.value.style.height = `${startHeight}px`;
           
           // 执行平滑过渡动画
           const tl = gsap.timeline({
-            onStart: () => {
-              console.log('🚀 [GSAP] 动画开始', {
-                startHeight: clipperRef.value.offsetHeight,
-                targetHeight
-              });
-            },
-            onUpdate: () => {
-              // 每帧输出当前高度
-              if (Math.random() < 0.1) { // 10%概率输出，避免过多日志
-                console.log('📊 [GSAP] 动画进度', {
-                  currentHeight: clipperRef.value.offsetHeight,
-                  innerHeight: innerWrapperRef.value.offsetHeight
-                });
-              }
-            },
             onComplete: () => {
-              console.log('✅ [GSAP] 动画完成', {
-                finalHeight: clipperRef.value.offsetHeight,
-                innerHeight: innerWrapperRef.value.offsetHeight,
-                innerScrollHeight: innerWrapperRef.value.scrollHeight
-              });
-              
               // 不设置auto，保持固定高度，避免突变
               // 高度会在窗口resize时自动调整
               done();
