@@ -62,6 +62,13 @@ const scrambleDirective = {
     const scrambler = new ScrambleText(el);
     const originalText = el.textContent;
     
+    console.log('🔧 [vScramble] mounted', {
+      element: el,
+      originalText,
+      initialHeight: el.offsetHeight,
+      initialWidth: el.offsetWidth
+    });
+    
     // 【关键修复】立即同步设置高度，不等待任何异步操作
     // 先设置最终文本内容，以便测量正确的高度
     el.textContent = originalText;
@@ -70,12 +77,22 @@ const scrambleDirective = {
     el.offsetHeight;
     
     // 使用 offsetHeight 获取包含 padding 的整数高度
-    // 并向上取整，再额外加 12px 的安全缓冲（增加更多空间）
-    const safeHeight = Math.ceil(el.offsetHeight) + 12;
-    const safeWidth = Math.ceil(el.offsetWidth) + 6;
+    // 并向上取整，再额外加 20px 的安全缓冲（确保文字完全显示）
+    const safeHeight = Math.ceil(el.offsetHeight) + 20;
+    const safeWidth = Math.ceil(el.offsetWidth) + 8;
+
+    console.log('📏 [vScramble] 计算高度', {
+      offsetHeight: el.offsetHeight,
+      safeHeight,
+      offsetWidth: el.offsetWidth,
+      safeWidth
+    });
 
     el.style.height = `${safeHeight}px`;
     el.style.width = `${safeWidth}px`;
+    
+    // 确保 line-height 为 1.5，给文字更多垂直空间
+    el.style.lineHeight = '1.5';
     
     // 强制行内块，确保宽高生效
     if (window.getComputedStyle(el).display === 'inline') {
@@ -90,6 +107,12 @@ const scrambleDirective = {
     
     // 暂时隐藏内容，等待 IntersectionObserver 触发动画
     el.style.opacity = '0';
+    
+    console.log('✅ [vScramble] 高度已设置', {
+      finalHeight: el.style.height,
+      finalWidth: el.style.width,
+      computedHeight: window.getComputedStyle(el).height
+    });
 
     // IntersectionObserver 只用于触发动画，不再负责设置高度
     const observer = new IntersectionObserver(
