@@ -87,29 +87,48 @@ const onLeave = (el, done) => {
 // 2. 进入动画
 const onEnter = (el, done) => {
   gsap.set(el, { opacity: 0 });
+  
   nextTick(() => {
     document.fonts.ready.then(() => {
       if (!clipperRef.value || !innerWrapperRef.value) { done(); return; }
+      
       const startHeight = clipperRef.value.offsetHeight;
-      clipperRef.value.style.height = 'auto';
-      const targetHeight = innerWrapperRef.value.offsetHeight;
-      clipperRef.value.style.height = `${startHeight}px`;
-      const tl = gsap.timeline({
-        onComplete: () => {
-          if (clipperRef.value) clipperRef.value.style.height = 'auto';
-          done();
-        }
-      });
-      tl.to(clipperRef.value, {
-        height: targetHeight,
-        duration: 0.5,
-        ease: "power3.inOut"
-      });
-      tl.to(el, {
-        opacity: 1,
-        duration: 0.4,
-        ease: "power2.out"
-      }, "-=0.2");
+      
+      // 使用 setTimeout 确保 vScramble 已完成同步高度设置
+      setTimeout(() => {
+        // 临时设置为 auto 以计算最终高度（包括 vScramble 的固定高度）
+        clipperRef.value.style.height = 'auto';
+        
+        // 强制重排，确保获取到准确高度
+        const targetHeight = innerWrapperRef.value.offsetHeight;
+        
+        // 恢复起始高度
+        clipperRef.value.style.height = `${startHeight}px`;
+          
+          // 执行平滑过渡动画
+          const tl = gsap.timeline({
+            onComplete: () => {
+              if (clipperRef.value) {
+                clipperRef.value.style.height = 'auto';
+              }
+              done();
+            }
+          });
+          
+          // 高度过渡（一次性到达最终高度）
+          tl.to(clipperRef.value, {
+            height: targetHeight,
+            duration: 0.5,
+            ease: "power3.inOut"
+          });
+          
+          // 透明度过渡
+          tl.to(el, {
+            opacity: 1,
+            duration: 0.4,
+            ease: "power2.out"
+          }, "-=0.2");
+      }, 0);
     });
   });
 };

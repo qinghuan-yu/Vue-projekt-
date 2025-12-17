@@ -326,19 +326,19 @@ export function useAdvancedParticles(app) {
             const waveTime = elapsed - NETWORK_CONFIG.GROWTH_TIME;
             
             // 计算粒子数量的波动因子 (0.5 ~ 1.0)
-            // Math.sin 的范围是 -1 ~ 1
+            // Math.cos 的范围是 -1 ~ 1，从最大值开始波动
             // 我们想要 range: [MIN_RATIO, 1.0]
             // Center = (1 + MIN) / 2
             // Amplitude = (1 - MIN) / 2
             const center = (1 + NETWORK_CONFIG.MIN_RATIO) / 2; // 0.75
             const amp = (1 - NETWORK_CONFIG.MIN_RATIO) / 2;    // 0.25
             
-            // 数量因子
-            const countFactor = center + amp * Math.sin(waveTime * NETWORK_CONFIG.FREQ_COUNT);
+            // 数量因子（使用余弦波，从最大值开始）
+            const countFactor = center + amp * Math.cos(waveTime * NETWORK_CONFIG.FREQ_COUNT);
             currentTargetCount = Math.floor(NETWORK_CONFIG.MAX_COUNT * countFactor);
 
             // 距离因子 (注意使用了不同的频率 FREQ_DIST)
-            const distFactor = center + amp * Math.sin(waveTime * NETWORK_CONFIG.FREQ_DIST);
+            const distFactor = center + amp * Math.cos(waveTime * NETWORK_CONFIG.FREQ_DIST);
             currentConnDist = NETWORK_CONFIG.MAX_DIST * distFactor;
         }
 

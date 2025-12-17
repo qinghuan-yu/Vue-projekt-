@@ -61,37 +61,49 @@ const scrambleDirective = {
   mounted(el) {
     const scrambler = new ScrambleText(el);
     const originalText = el.textContent;
+    
+    // 【关键修复】立即同步设置高度，不等待任何异步操作
+    // 先设置最终文本内容，以便测量正确的高度
+    el.textContent = originalText;
+    
+    // 强制重排，确保浏览器重新计算布局
+    el.offsetHeight;
+    
+    // 使用 offsetHeight 获取包含 padding 的整数高度
+    // 并向上取整，再额外加 12px 的安全缓冲（增加更多空间）
+    const safeHeight = Math.ceil(el.offsetHeight) + 12;
+    const safeWidth = Math.ceil(el.offsetWidth) + 6;
 
+    el.style.height = `${safeHeight}px`;
+    el.style.width = `${safeWidth}px`;
+    
+    // 强制行内块，确保宽高生效
+    if (window.getComputedStyle(el).display === 'inline') {
+      el.style.display = 'inline-block';
+    }
+    
+    // 保持垂直对齐，防止因为 inline-block 导致的基线偏移
+    el.style.verticalAlign = 'top';
+    
+    // 添加 overflow:hidden 防止解码动画期间内容溢出
+    el.style.overflow = 'hidden';
+    
+    // 暂时隐藏内容，等待 IntersectionObserver 触发动画
+    el.style.opacity = '0';
+
+    // IntersectionObserver 只用于触发动画，不再负责设置高度
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          
-          // 🛡️【核心修复】等待字体加载完毕后再测量
           document.fonts.ready.then(() => {
-              // 使用 offsetHeight 获取包含 padding 的整数高度
-              // 并向上取整，再额外加 4px 的安全缓冲，防止 descender (g,j,p) 被切
-              const safeHeight = Math.ceil(el.offsetHeight) + 4;
-              const safeWidth = Math.ceil(el.offsetWidth) + 2;
-
-              el.style.height = `${safeHeight}px`;
-              el.style.width = `${safeWidth}px`;
-              
-              // 强制行内块，确保宽高生效
-              if (window.getComputedStyle(el).display === 'inline') {
-                el.style.display = 'inline-block';
-              }
-              
-              // 保持垂直对齐，防止因为 inline-block 导致的基线偏移
-              el.style.verticalAlign = 'top'; 
-
-              scrambler.setText(originalText).then(() => {
-                // 🔓 动画结束
-                // 【关键决策】：如果解锁导致回弹，我们可以选择"不完全解锁"，
-                // 或者确保 ResizeObserver 能捕捉到。
-                // 考虑到 MainLayout 的存在，这里我们释放高度，但在 MainLayout 里做保护。
-                el.style.height = '';
-                el.style.width = '';
-              });
+            // 显示元素
+            el.style.opacity = '1';
+            
+            // 开始解码动画
+            scrambler.setText(originalText).then(() => {
+              // 动画完成，移除 overflow 限制
+              el.style.overflow = '';
+            });
           });
 
           observer.unobserve(el);
