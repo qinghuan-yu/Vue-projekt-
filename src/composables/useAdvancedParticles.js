@@ -23,7 +23,7 @@ const PARTICLE_SIZE_MAX = isMobile ? 2.0 : 2.2;
 // --- 神经网络 (NETWORK) 呼吸动画配置 ---
 const NETWORK_CONFIG = {
     MAX_COUNT: isMobile ? 150 : 300,        // 网络节点最大数
-    MAX_DIST: isMobile ? 150 : 300,         // 最大连线距离
+    MAX_DIST: isMobile ? 150 : 220,         // 最大连线距离
     GROWTH_TIME: 4000,                      // 初始加载：从0增长到最大值的时间 (ms)
     
     // 呼吸波动配置 (正弦波)
@@ -31,8 +31,8 @@ const NETWORK_CONFIG = {
     MIN_RATIO: 0.5,                         // 最小值为最大值的 50%
     
     // 频率 (值越小变化越慢)
-    FREQ_COUNT: 0.0008,                     // 粒子数量变化的频率
-    FREQ_DIST: 0.0004,                      // 连线距离变化的频率 (两者不同步)
+    FREQ_COUNT: 0.0002,                     // 粒子数量变化的频率 (0.0008 -> 0.0002)
+    FREQ_DIST: 0.0001,                      // 连线距离变化的频率 (0.0004 -> 0.0001)
     
     LINE_COLOR: 0x61b1d6,
     SCREEN_PADDING: 100,
@@ -112,7 +112,7 @@ class Particle {
 
         // 呼吸闪烁参数
         this.breathPhase = Math.random() * Math.PI * 2;
-        this.breathSpeed = 0.02 + Math.random() * 0.03;
+        this.breathSpeed = 0.005 + Math.random() * 0.01; // 降低速度，使周期变长
         
         this.fadeInFactor = initial ? 0 : 0; // 初始为0，慢慢浮现
 
@@ -222,14 +222,20 @@ class Particle {
         this.radius = isMobile ? 1.0 : 1.2;
     }
 
-    // 重置并随机散开 (修复：不再需要 w, h 参数)
-    releaseToNetwork() {
-        // 不重置位置，只赋予随机速度，让它从当前形状位置散开
-        this.baseVx = (Math.random() - 0.5) * 1.5; // 散开速度稍快
-        this.baseVy = (Math.random() - 0.5) * 1.5;
-        this.vx = this.baseVx * 5; // 爆发初速度
-        this.vy = this.baseVy * 5;
+    // 重置并随机散开
+    releaseToNetwork(w, h) {
+        // 强制全屏随机重置位置
+        this.x = Math.random() * w;
+        this.y = Math.random() * h;
+        
+        // 重置为基础漂浮速度
+        this.baseVx = (Math.random() - 0.5) * 0.6;
+        this.baseVy = (Math.random() - 0.5) * 0.6;
+        this.vx = 0;
+        this.vy = 0;
+        
         this.targetColor = this.baseColor;
+        this.fadeInFactor = 0; // 重新淡入
     }
 
     moveTo(targetX, targetY) {
@@ -539,7 +545,7 @@ export function useAdvancedParticles(app) {
             startTime = performance.now(); // 重置时间以触发 Growth 动画
             // 释放所有粒子，恢复为网络漂浮状态
             for (const p of particles) {
-                if(p.visible) p.releaseToNetwork();
+                if(p.visible) p.releaseToNetwork(w, h);
             }
             return;
         }
