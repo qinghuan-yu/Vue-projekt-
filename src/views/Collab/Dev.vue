@@ -64,24 +64,14 @@
     
     <!-- 系统标识 -->
     <div class="system-footer">
-      <svg width="140" height="25" xmlns="http://www.w3.org/2000/svg">
-        <g opacity="0.5">
-          <rect x="0" width="3" height="20" fill="#61b1d6"/>
-          <rect x="5" width="2" height="20" fill="#61b1d6"/>
-          <rect x="9" width="4" height="20" fill="#61b1d6"/>
-          <rect x="15" width="2" height="20" fill="#61b1d6"/>
-          <rect x="19" width="3" height="20" fill="#61b1d6"/>
-        </g>
-      </svg>
+      <DecorationBarcode :width="140" :height="25" />
       <div class="system-id">DEV_ID: 0xC0DE-EMBEDDED</div>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'DevCollab'
-}
+<script setup>
+import DecorationBarcode from '@/components/DecorationBarcode.vue';
 </script>
 
 <style scoped>

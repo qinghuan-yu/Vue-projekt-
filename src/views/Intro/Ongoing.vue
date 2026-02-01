@@ -51,23 +51,13 @@
         <span class="stat-label">STATUS</span>
         <span class="stat-value active-text">ACTIVE</span>
       </div>
-      <svg width="120" height="20" xmlns="http://www.w3.org/2000/svg">
-        <g opacity="0.4">
-          <rect x="0" width="2" height="15" fill="#F4D03F"/>
-          <rect x="4" width="1" height="15" fill="#F4D03F"/>
-          <rect x="7" width="3" height="15" fill="#F4D03F"/>
-          <rect x="12" width="1" height="15" fill="#F4D03F"/>
-          <rect x="15" width="2" height="15" fill="#F4D03F"/>
-        </g>
-      </svg>
+      <DecorationBarcode :width="120" :height="20" color="#F4D03F" />
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'OngoingProjects'
-}
+<script setup>
+import DecorationBarcode from '@/components/DecorationBarcode.vue';
 </script>
 
 <style scoped>

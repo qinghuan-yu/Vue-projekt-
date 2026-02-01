@@ -37,24 +37,14 @@
     
     <!-- 档案条形码 -->
     <div class="archive-footer">
-      <svg width="150" height="30" xmlns="http://www.w3.org/2000/svg">
-        <g opacity="0.5">
-          <rect x="0" width="3" height="25" fill="#4ade80"/>
-          <rect x="5" width="2" height="25" fill="#4ade80"/>
-          <rect x="9" width="4" height="25" fill="#4ade80"/>
-          <rect x="15" width="2" height="25" fill="#4ade80"/>
-          <rect x="19" width="3" height="25" fill="#4ade80"/>
-        </g>
-      </svg>
+      <DecorationBarcode :width="150" :height="30" color="#4ade80" />
       <div class="archive-code">ARCHIVE_ID: COMPLETE-02</div>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'FinishedProjects'
-}
+<script setup>
+import DecorationBarcode from '@/components/DecorationBarcode.vue';
 </script>
 
 <style scoped>

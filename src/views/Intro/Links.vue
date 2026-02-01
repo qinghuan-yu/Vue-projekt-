@@ -32,46 +32,25 @@
         <span class="info-label">TOTAL CONNECTIONS</span>
         <span class="info-value">{{ repositories.length }}</span>
       </div>
-      <svg width="100" height="25" xmlns="http://www.w3.org/2000/svg">
-        <g opacity="0.4">
-          <rect x="0" width="2" height="20" fill="#61b1d6"/>
-          <rect x="4" width="1" height="20" fill="#61b1d6"/>
-          <rect x="7" width="3" height="20" fill="#61b1d6"/>
-          <rect x="12" width="1" height="20" fill="#61b1d6"/>
-        </g>
-      </svg>
+      <DecorationBarcode :width="100" :height="25" />
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'LinksView',
-  data() {
-    return {
-      repositories: [
-        {
-          name: 'GitHub Profile',
-          url: 'https://github.com/qinghuan-yu',
-        },
-        {
-          name: '网易云音乐',
-          url: 'https://music.163.com/#/artist?id=100570638',
-        },
-      ]
-    }
+<script setup>
+import { ref } from 'vue';
+import DecorationBarcode from '@/components/DecorationBarcode.vue';
+
+const repositories = ref([
+  {
+    name: 'GitHub Profile',
+    url: 'https://github.com/qinghuan-yu',
   },
-  methods: {
-    getDomain(url) {
-      try {
-        const domain = new URL(url).hostname;
-        return domain;
-      } catch {
-        return url;
-      }
-    }
-  }
-}
+  {
+    name: '网易云音乐',
+    url: 'https://music.163.com/#/artist?id=100570638',
+  },
+]);
 </script>
 
 <style scoped>
