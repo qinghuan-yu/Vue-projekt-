@@ -156,21 +156,21 @@ const indicatorPosition = computed(() => {
   position: relative;
 }
 
-/* 背景特效 */
+/* 背景特效 - 简洁网格背景 */
 .cross-grid-background {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 1; /* Increased opacity to make grid visible */
-  background-color: #000;
+  opacity: 1;
+  background-color: #050505;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(45deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(-45deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 100px 100px, 100px 100px, 100px 100px, 100px 100px; /* Smaller size for denser grid */
-  background-position: center center;
+    /* 水平线 */
+    linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    /* 垂直线 */
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 160px 160px;
+  background-position: 0 0;
 }
 
 .cross-grid-background::after {
@@ -178,7 +178,7 @@ const indicatorPosition = computed(() => {
   position: absolute;
   inset: 0;
   opacity: 0.15;
-  background-image: radial-gradient(circle, #fff 1px, transparent 0);
+  background-image: radial-gradient(circle, rgba(97, 177, 214, 0.4) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
@@ -399,14 +399,14 @@ const indicatorPosition = computed(() => {
   width: 100%;
   position: relative;
   box-sizing: border-box;
-  background-color: #050505; /* 强制黑色背景，防止白屏闪烁 */
+  background-color: transparent; /* 透明以显示底层格子背景 */
 }
 
 /* 视图包装器 - 防止过渡时白屏 */
 .view-wrapper {
   width: 100%;
   min-height: calc(100vh - 96px);
-  background-color: #050505;
+  background-color: transparent; /* 透明以显示底层格子背景 */
 }
 
 /* Footer */
@@ -436,28 +436,24 @@ const indicatorPosition = computed(() => {
 .parallax-enter-active,
 .parallax-leave-active {
   transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  background-color: #050505 !important; /* 确保过渡期间背景始终黑色 */
 }
 
 /* Entering page (from Bottom) */
 .parallax-enter-from {
   opacity: 0;
   transform: translateY(60px);
-  background-color: #050505 !important;
 }
 
 /* Leaving page (to Top) */
 .parallax-leave-to {
   opacity: 0;
   transform: translateY(-60px);
-  background-color: #050505 !important;
 }
 
 .parallax-enter-to,
 .parallax-leave-from {
   opacity: 1;
   transform: translateY(0);
-  background-color: #050505 !important;
 }
 
 .fade-enter-active,

@@ -125,7 +125,7 @@ canvas {
 .parallax-enter-active,
 .parallax-leave-active {
     transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-    background-color: transparent; /* 确保过渡期间不会显示白色 */
+    background-color: #050505; /* 必须是实体黑色，透明会漏出浏览器默认白色 */
 }
 
 /* 3. 离开 (Leave) - 页面消失 */
