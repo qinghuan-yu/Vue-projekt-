@@ -15,20 +15,16 @@ const { init } = usePixiApp();  // 只解构 init，不要 destroy
 let morphToShapes = null;
 
 onMounted(async () => {
-  console.log('PixiBackground: Starting initialization...');
   if (container.value) {
     const controls = await init(container.value);
-    console.log('PixiBackground: PixiJS initialized', controls);
     morphToShapes = controls.morphToShapes;
-    console.log('PixiBackground: morphToShapes assigned', !!morphToShapes);
-
+    
     // 根据初始路由显示对应效果
     await updateParticlesByRoute(route.path);
   }
 });
 
 onUnmounted(() => {
-  console.log('PixiBackground: Component unmounting (but NOT destroying global Pixi app)');
   // 注意：不销毁全局 app，因为这是全局单例背景
   // 只清理局部引用
   morphToShapes = null;
@@ -42,9 +38,7 @@ watch(() => route.path, (newPath) => {
 }, { immediate: false });
 
 const updateParticlesByRoute = async (path) => {
-  console.log('🚀 updateParticlesByRoute called with path:', path);
   if (!morphToShapes) {
-    console.error('updateParticlesByRoute: morphToShapes is null!');
     return;
   }
 
@@ -76,16 +70,12 @@ const updateParticlesByRoute = async (path) => {
 
 // 暴露方法给外部调用（用于 Projects 页面的项目切换）
 const updateProjectImage = async (imageUrl, layoutX = 0.35) => {
-  console.log('📸 updateProjectImage called:', { morphToShapes: !!morphToShapes, imageUrl, layoutX });
   if (!morphToShapes) {
-    console.error('updateProjectImage: morphToShapes is null!');
     return;
   }
-  console.log('📸 Calling morphToShapes with config...');
   const result = await morphToShapes([
     { source: imageUrl, options: { type: 'image', sampleRate: 4, layoutX } }
   ]);
-  console.log('📸 morphToShapes completed:', result);
 };
 
 defineExpose({

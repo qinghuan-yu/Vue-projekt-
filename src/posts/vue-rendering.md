@@ -1,6 +1,6 @@
 ---
 title: "Vue 3 渲染机制解析"
-date: "2026-02-01"
+date: "2026-02-02"
 desc: "深入浅出地探讨 Vue 3 核心渲染 loop 机制与性能优化关键路径。"
 tags: ["Vue", "Frontend", "Performance"]
 ---
