@@ -11,12 +11,11 @@
   --border-tech: rgba(255, 255, 255, 0.15); 
 }
 
-/* 基础重置 - 强制黑色背景 */
+/* 基础重置 */
 html,
 body {
-  background-color: #050505 !important; /* 强制黑色，防止任何闪烁 */
+  background-color: #050505;
   color: var(--color-text-main);
-  /* 字体组合 */
   font-family: 'Space Grotesk', 'Noto Sans SC', monospace; 
   overflow: hidden;
   margin: 0;
@@ -25,13 +24,12 @@ body {
   height: 100vh;
 }
 
-/* 确保所有元素继承黑色背景 */
 * {
   box-sizing: border-box;
 }
 
 #app {
-  background-color: #050505 !important; /* 强制黑色 */
+  background-color: #050505;
   min-height: 100vh;
 }
 
@@ -125,7 +123,6 @@ canvas {
 .parallax-enter-active,
 .parallax-leave-active {
     transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-    background-color: #050505; /* 必须是实体黑色，透明会漏出浏览器默认白色 */
 }
 
 /* 3. 离开 (Leave) - 页面消失 */

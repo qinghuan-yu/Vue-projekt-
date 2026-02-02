@@ -425,11 +425,6 @@ const indicatorPosition = computed(() => {
 /* 颜色工具类 */
 .dark-cyan { color: #22d3ee; }
 
-/* Global Background Fix */
-.app-container {
-  background-color: #000000;
-}
-
 /* 路由转场: 垂直向上 (Revert to Vertical Up) */
 /* Enter from Bottom, Leave to Top */
 
