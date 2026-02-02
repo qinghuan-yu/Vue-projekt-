@@ -237,16 +237,11 @@ const currentPostContent = computed(() => {
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.ak-list-item:hover {
+.ak-list-item:hover, .ak-list-item.active {
   opacity: 1;
   background: transparent;
   transform: translateX(10px) scale(1.02);
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-.ak-list-item.active {
-  opacity: 1;
-  background: transparent;
 }
 
 .item-content-row {
@@ -277,7 +272,8 @@ const currentPostContent = computed(() => {
   width: 100%;
   height: 1px;
   background: rgba(255, 255, 255, 0.3);
-  transition: background 0.3s;
+  transition: all 0.3s;
+  transform-origin: left center;
 }
 
 .ak-list-item:hover .item-separator {
@@ -286,7 +282,9 @@ const currentPostContent = computed(() => {
 
 .ak-list-item.active .item-separator {
   background: #22d3ee;
-  height: 2px;
+  box-shadow: 0 0 5px #22d3ee;
+  /* Use transform instead of height to avoid layout shift (jitter) */
+  transform: scaleY(2); 
 }
 
 /* Remove old tab styles */
