@@ -1,7 +1,6 @@
 <template>
   <section class="projects-container">
-    <!-- Visual Layer: Pixi Canvas -->
-    <div ref="visualContainer" class="pixi-layer"></div>
+    <!-- Visual Layer: Pixi Canvas Removed (Global in MainLayout) -->
 
     <!-- UI Layer -->
     <div class="layer-content">
@@ -172,8 +171,6 @@ const projects = [
 ];
 
 const selectedIndex = ref(-1);
-const visualContainer = ref(null);
-const { init, destroy } = usePixiApp();
 let morphToShapes = null;
 
 const currentProject = computed(() => {
@@ -231,19 +228,23 @@ const onBottomBarAfterLeave = (el) => {};
 // --- Lifecycle ---
 
 onMounted(async () => {
-  if (visualContainer.value) {
-    const controls = await init(visualContainer.value);
+  // Get partial control of global Pixi instance
+  const { init } = usePixiApp();
+  // We can call init() without container, it will wait for the global initialization to complete
+  try {
+    const controls = await init(); 
     morphToShapes = controls.morphToShapes;
     
-    // Initial State: Default PCB on RIGHT (0.75) for List View
-    setTimeout(() => {
-        updateParticles(defaultPcb, 0.75);
-    }, 100);
+    // Initial State is handled by PixiBackground global watcher now.
+    // Removed duplicate call to avoid double loading.
+  } catch (e) {
+    console.warn("Pixi helper not ready yet or failed:", e);
   }
 });
 
 onUnmounted(() => {
-  destroy();
+  // Do not destroy global app
+  morphToShapes = null;
 });
 </script>
 

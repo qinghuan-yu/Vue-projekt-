@@ -11,31 +11,52 @@ import { useAdvancedParticles } from './useAdvancedParticles.js';
 
 let app = null;
 let particles = null;
+let exposedMorphToShapes = null;
+let initPromise = null;
 
 export function usePixiApp() {
-  // 在 init 后将被赋值为 particles.morphToShapes，供外部触发粒子变形
-  let exposedMorphToShapes = null;
-
   const init = async (container) => {
-    if (app) return { morphToShapes: exposedMorphToShapes };
+    // If initialization is already in progress, wait for it
+    if (initPromise) {
+      await initPromise;
+      // If we provided a new container and app exists, move it.
+      if (app && container && app.canvas.parentNode !== container) {
+        container.appendChild(app.canvas);
+        app.resizeTo = container;
+        app.resize();
+      }
+      return { morphToShapes: exposedMorphToShapes };
+    }
 
-    app = new Application();
-    await app.init({
-      width: container.clientWidth,
-      height: container.clientHeight,
-      backgroundAlpha: 0,
-      resizeTo: container,
-      antialias: true,
-      preference: 'webgl',
-    });
+    // Start initialization (lock)
+    initPromise = (async () => {
+      // If called without container and no app, we can't init
+      if (!container && !app) {
+        throw new Error("usePixiApp: Cannot initialize without a container.");
+      }
 
-    container.appendChild(app.canvas);
+      if (app) return; // Should be covered by initPromise check but double check
 
-    // 初始化并启动高级粒子系统（内部基于 app.screen 进行布局）
-    particles = useAdvancedParticles(app);
-    particles.init();
+      app = new Application();
+      await app.init({
+        width: container.clientWidth,
+        height: container.clientHeight,
+        backgroundAlpha: 0,
+        resizeTo: container,
+        antialias: true,
+        preference: 'webgl',
+      });
 
-    exposedMorphToShapes = particles.morphToShapes;
+      container.appendChild(app.canvas);
+
+      // 初始化并启动高级粒子系统（内部基于 app.screen 进行布局）
+      particles = useAdvancedParticles(app);
+      particles.init(); // Sync init
+
+      exposedMorphToShapes = particles.morphToShapes;
+    })();
+
+    await initPromise;
     return { morphToShapes: exposedMorphToShapes };
   };
 
@@ -43,7 +64,12 @@ export function usePixiApp() {
     if (particles) { particles.destroy(); particles = null; }
     if (app) { app.destroy(true, { children: true, texture: true, basePath: true }); app = null; }
     exposedMorphToShapes = null;
+    initPromise = null; // Reset promise
   };
 
-  return { init, destroy };
+  const getParticleControls = () => {
+    return { morphToShapes: exposedMorphToShapes };
+  };
+
+  return { init, destroy, getParticleControls };
 }

@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <!-- Global Static Background -->
+    <PixiBackground class="global-pixi-bg" />
     <div class="cross-grid-background"></div>
     <div class="scan-effect"></div>
 
@@ -78,6 +79,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import PixiBackground from '@/components/PixiBackground.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -145,11 +147,24 @@ const indicatorPosition = computed(() => {
 });
 </script>
 
+<style>
+.global-pixi-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0; /* Base layer */
+  pointer-events: none;
+}
+</style>
+
 <style scoped>
+
 /* 容器 */
 .app-container {
   min-height: 100vh;
-  background-color: #050505;
+  background-color: transparent; /* Changed from #050505 to transparent to show body bg + pixi */
   color: white;
   font-family: 'Noto Sans SC', sans-serif;
   overflow: hidden;
@@ -160,10 +175,10 @@ const indicatorPosition = computed(() => {
 .cross-grid-background {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 1; /* Above Pixi */
   pointer-events: none;
   opacity: 1;
-  background-color: #050505;
+  background-color: transparent; /* Remove solid background */
   background-image:
     /* 水平线 */
     linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
@@ -398,6 +413,7 @@ const indicatorPosition = computed(() => {
   min-height: 100vh;
   width: 100%;
   position: relative;
+  z-index: 10; /* Ensure content is above background layers */
   box-sizing: border-box;
   background-color: transparent; /* 透明以显示底层格子背景 */
 }

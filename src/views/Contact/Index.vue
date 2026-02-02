@@ -1,6 +1,5 @@
 <template>
   <div class="contact-page">
-    <div ref="visualContainer" class="visual-container"></div>
     
     <!-- Interaction Layer -->
     <div class="content-layer">
@@ -32,48 +31,6 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { usePixiApp } from '../../composables/usePixiApp';
-
-// Assets
-import musicPng from '@/assets/music.png';
-import mailPng from '@/assets/mail.png';
-import githubPng from '@/assets/github.png';
-
-const visualContainer = ref(null);
-const { init, destroy } = usePixiApp();
-let morphToShapes = null;
-
-onMounted(async () => {
-  if (visualContainer.value) {
-    const controls = await init(visualContainer.value);
-    morphToShapes = controls.morphToShapes;
-    
-    // Trigger display of 3 icons
-    showIcons();
-  }
-});
-
-onUnmounted(() => {
-  destroy();
-});
-
-const showIcons = async () => {
-  if (!morphToShapes) return;
-  
-  // Pass 3 images to trigger the 3-column layout in useAdvancedParticles
-  // Increase sampleRate to normal (default was 4, lower = more pixels) or keep consistent
-  // If density is inconsistent, we can tweak sampleRate per image if needed,
-  // but usually sampleRate: 3 or 4 is good.
-  const commonOptions = { type: 'image', sampleRate: 3 }; 
-  
-  await morphToShapes([
-    { source: musicPng, options: commonOptions },
-    { source: mailPng, options: commonOptions },
-    { source: githubPng, options: commonOptions }
-  ]);
-};
-
 </script>
 
 <style scoped>
@@ -82,7 +39,7 @@ const showIcons = async () => {
   width: 100%;
   height: 100vh;
   overflow: hidden;
-  background: black; 
+  background: transparent; 
   font-family: 'Space Grotesk', sans-serif; /* Unified Font */
 }
 
