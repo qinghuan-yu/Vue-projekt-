@@ -8,7 +8,7 @@
           <span class="header-tag">Profile Authenticated</span>
         </div>
         
-        <h1 class="main-title">I am Relic<br>I am Ark</h1>
+        <h1 class="main-title">I am Relic<br><span class="blue-text">I am Ark</span></h1>
         
         <div class="detail-grid">
           <div class="detail-left">
@@ -31,8 +31,8 @@
 
           <div class="detail-right">
             <div class="signature-box">
-               <p class="sig-label"></p>
-               <p class="sig-val"></p>
+               <p class="sig-label">Signature</p>
+               <p class="sig-val" style="font-family: 'Noto Sans SC', serif;">清棫</p>
             </div>
           </div>
         </div>
@@ -45,6 +45,10 @@
 </script>
 
 <style scoped>
+.blue-text {
+  color: #22d3ee;
+}
+
 .identity-container {
   min-height: 80vh; 
   height: 100%;

@@ -8,7 +8,8 @@
       
       <!-- VIEW 1: Project List -->
       <!-- Wrapper for list view content, handled by internal staggering -->
-      <div class="view-list" :class="{ 'list-hidden': selectedIndex !== -1 }">
+      <transition name="list-section">
+      <div v-show="selectedIndex === -1" class="view-list">
           <div class="list-header">
             <h3 class="projects-title">Projects</h3>
             <p class="projects-subtitle">Ongoing Development Logs</p>
@@ -36,6 +37,7 @@
             </div>
           </transition-group>
       </div>
+      </transition>
 
       <!-- VIEW 2: Project Detail -->
       <div v-if="selectedIndex !== -1" class="view-detail">
@@ -46,17 +48,17 @@
             <!-- ContentWrapper: Right Aligned Text -->
             <div class="detail-wrapper">
                <div class="detail-content-area">
-                  <h2 class="detail-title-cn">{{ currentProject.title }}</h2>
-                  <h2 class="detail-title-en">{{ currentProject.descTitle || 'PROJECT DETAILS' }}</h2>
+                  <h2 class="detail-title-cn stagger-item s-1">{{ currentProject.title }}</h2>
+                  <h2 class="detail-title-en stagger-item s-2">{{ currentProject.descTitle || 'PROJECT DETAILS' }}</h2>
                   
-                  <div class="detail-separator">
+                  <div class="detail-separator stagger-item s-2">
                      <div class="dashed-line"></div>
                   </div>
 
-                  <p class="detail-desc">
+                  <p class="detail-desc stagger-item s-2">
                     {{ currentProject.desc }}
                   </p>
-                  <div class="detail-action">
+                  <div class="detail-action stagger-item s-2">
                      <a :href="currentProject.link" target="_blank" class="text-link-box">
                         <span class="link-label">LAUNCH PROJECT</span>
                         <span class="link-arrow">↗</span>
@@ -67,10 +69,23 @@
 
             <!-- Right Side World/Index Indicator (as per image) -->
             <div class="right-indicator">
-                <span class="idx-big">0{{ selectedIndex + 1 }}</span>
-                <div class="idx-sub">
-                    <span>/ 0{{ projects.length }}</span>
-                    <span class="idx-label_">Projects</span>
+                <div class="indicator-group-custom">
+                   <div class="digit-row">
+                       <!-- Digit 0: Cut 50% -->
+                       <div class="digit-box">
+                           <span class="idx-digit stagger-exit e-1">0</span>
+                           <div class="cut-mask-half">
+                               <span class="txt-proj stagger-exit e-2">PROJ</span>
+                           </div>
+                       </div>
+                       <!-- Digit N: Cut ~20% -->
+                       <div class="digit-box">
+                           <span class="idx-digit stagger-exit e-1">{{ selectedIndex + 1 }}</span>
+                           <div class="cut-mask-small"></div>
+                       </div>
+                   </div>
+                   <!-- Bottom Info -->
+                   <div class="txt-info stagger-exit e-2">INFORMATION</div>
                 </div>
             </div>
 
@@ -93,10 +108,13 @@
            </div>
            
            <button @click="closeDetail" class="back-btn-block">
-               <div class="back-icon">‹</div>
-               <div class="back-text">
-                  <span>返回</span>
-                  <span class="back-en">GO BACK</span>
+               <div class="back-bg"></div>
+               <div class="back-content">
+                  <div class="back-icon">‹</div>
+                  <div class="back-text">
+                      <span>返回</span>
+                      <span class="back-en">GO BACK</span>
+                  </div>
                </div>
            </button>
         </div>
@@ -214,6 +232,107 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+
+
+/* Adjust Transitions */
+.list-section-enter-active, .list-section-leave-active {
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.list-section-enter-from, .list-section-leave-to {
+  /* Only animate opacity for container or minor transform, 
+     Let staggered list items handle the big movement */
+   opacity: 0;
+}
+
+/* List Header Animation (Projects Title) */
+.list-section-leave-active .list-header {
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(-50px);
+    opacity: 0;
+}
+
+/* Staggered List Items */
+.staggered-list-enter-active,
+.staggered-list-leave-active {
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.staggered-list-enter-from,
+.staggered-list-leave-to {
+  opacity: 0;
+  transform: translateY(-30px); /* Leave Upwards */
+}
+
+/* Stagger Delays for Leaving List */
+/* We need to reverse staggered delay for leaving or just apply consistent delay.
+   Vue doesn't automatically stagger 'leave' without hooks or CSS tricks.
+   We can calculate delay based on index in style tag.
+*/
+.staggered-list-leave-active {
+   transition-delay: calc(var(--i) * 0.1s);
+}
+
+
+/* Stagger Animations for Project Detail Entering */
+.project-switch-enter-active {
+    transition: all 1.0s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.project-switch-leave-active {
+    transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.project-switch-enter-from {
+    opacity: 0; 
+}
+.project-switch-leave-to {
+    opacity: 0;
+}
+
+/* Entering Elements (Detail) */
+.stagger-item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: simple-fade-up 1.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Exiting Elements (Detail) - Specifically the Indicator parts */
+.project-switch-leave-active .stagger-exit {
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 1;
+    transform: translateY(0);
+}
+.project-switch-leave-to .stagger-exit {
+    opacity: 0;
+    transform: translateY(-20px); /* Move Up out */
+}
+
+/* Delays Enter */
+.right-indicator .idx-big {
+    display: inline-block;
+    /* Use simple fade up to match everything else, no bespoke bounce */
+    animation: simple-fade-up 1.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: 0.4s;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* 
+@keyframes bounce-enter {
+   0% { opacity: 0; transform: translateY(40px); }
+   50% { opacity: 1; transform: translateY(-15px); }
+   100% { opacity: 1; transform: translateY(0); }
+} 
+*/
+
+
+/* Delays Exit (Top to Bottom) */
+.project-switch-leave-active .e-1 { transition-delay: 0.0s; } /* Big starts first */
+.project-switch-leave-active .e-2 { transition-delay: 0.2s; } /* Text starts later */
+.project-switch-leave-active .e-3 { transition-delay: 0.3s; }
+
+
+@keyframes simple-fade-up {
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .projects-container {
   min-height: 100vh;
   position: relative;
@@ -457,35 +576,96 @@ onUnmounted(() => {
   transition: all 0.3s;
   background: rgba(0,0,0,0.5);
 }
-.text-link-box:hover {
-  background: #22d3ee;
-  color: #000;
+
+/* --- Custom Split Indicator Style --- */
+.indicator-group-custom {
+   position: relative;
+   display: flex;
+   flex-direction: column;
+   align-items: flex-start; /* Align left mostly */
 }
 
-.idx-big {
-  font-size: 80px;
-  font-weight: 700;
-  color: #22d3ee;
-  line-height: 0.8;
+.digit-row {
+  display: flex;
+  align-items: flex-end; /* Align bottom of digits */
+  line-height: 1;
 }
 
-.idx-sub {
+.digit-box {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  font-size: 14px;
-  color: white;
 }
-.idx-label_ {
+
+.idx-digit {
+  font-size: 150px; /* Reduced from 180px */
+  font-weight: 900;
+  color: #22d3ee;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  font-family: 'Arial Black', sans-serif;
+  display: block;
+}
+
+/* Mask for '0' - 50% height */
+.cut-mask-half {
+  position: absolute;
+  bottom: 0;
+  left: -10%; /* Extend to cover edges */
+  width: 120%; /* Extend width */
+  height: 52%; 
+  background: #000; 
+  z-index: 2;
+  display: flex;
+  align-items: flex-start; 
+  padding-top: 6px; /* Reduced padding to bring PROJ up slightly if needed */
+  padding-left: 10px; /* Indent slightly */
+  overflow: hidden;
+}
+
+/* Mask for 'N' - 20% height */
+.cut-mask-small {
+  position: absolute;
+  bottom: 0;
+  left: -10%;
+  width: 120%;
+  height: 20%;
+  background: #000;
+  z-index: 2;
+}
+
+.txt-proj {
+  font-size: 14px;
   font-weight: 700;
+  color: rgba(255,255,255,0.9);
   text-transform: uppercase;
-  font-size: 18px;
+  letter-spacing: 0.1em;
+}
+
+.txt-info {
+  font-size: 18px; 
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-top: -12px; /* Pull tighter to the PROJ line */
+  margin-left: 5px; 
+  position: relative;
+  z-index: 3;
+}
+
+/* Delays Enter: Target the separated digits */
+.indicator-group-custom .idx-digit {
+    animation: simple-fade-up 1.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: 0.4s;
+    opacity: 0;
+    transform: translateY(20px);
 }
 
 /* Bottom Bar */
 .bottom-bar-area {
   position: absolute;
-  bottom: 80px; /* Lifted up further to avoid cutoff */
+  bottom: 120px; /* Lifted up as requested */
   left: 0;
   width: 100%;
   height: 64px;
@@ -493,14 +673,16 @@ onUnmounted(() => {
   align-items: flex-end;
   pointer-events: auto;
   z-index: 150;
+  padding: 0 48px; /* Match layer padding */
 }
 
 .bar-progress-bg {
   flex: 1;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.2);
-  margin-bottom: 20px; /* Align visually */
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 31px; /* Center with button vertical align */
   position: relative;
+  margin-right: 24px;
 }
 
 .bar-progress-fill {
@@ -508,29 +690,64 @@ onUnmounted(() => {
   background: #22d3ee;
   transition: width 0.5s ease;
   box-shadow: 0 0 10px #22d3ee;
+  position: relative;
+}
+.bar-progress-fill::after {
+   content: '';
+   position: absolute;
+   right: -4px;
+   top: -3px;
+   width: 8px;
+   height: 8px;
+   background: #22d3ee;
+   border-radius: 50%;
+   box-shadow: 0 0 10px #22d3ee;
 }
 
 .back-btn-block {
-  width: 160px;
-  height: 100%;
-  background: #52525b; /* zinc-600 ish */
+  width: 180px;
+  height: 64px;
+  background: transparent;
+  padding: 0;
   border: none;
+  cursor: pointer;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  color: white;
-  transition: background 0.3s;
 }
-.back-btn-block:hover {
-  background: #22d3ee;
-  color: black;
+
+.back-bg {
+   position: absolute;
+   inset: 0;
+   background: rgba(255,255,255,0.05);
+   border: 1px solid rgba(255,255,255,0.1);
+   /* Removed skewX(-15deg) as requested for rectangle */
+   transition: all 0.3s ease;
+}
+
+.back-btn-block:hover .back-bg {
+   background: rgba(34, 211, 238, 0.1);
+   border-color: #22d3ee;
+   box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+}
+
+.back-content {
+   position: relative;
+   z-index: 2;
+   display: flex;
+   align-items: center;
+   color: white;
+   gap: 12px;
 }
 
 .back-icon {
   font-size: 24px;
-  margin-right: 12px;
-  font-weight: bold;
+  font-weight: 300;
+  transition: transform 0.3s;
+}
+.back-btn-block:hover .back-icon {
+   transform: translateX(-4px);
 }
 
 .back-text {
@@ -541,9 +758,9 @@ onUnmounted(() => {
 }
 
 .back-en {
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.1em;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 /* --- Transitions --- */
@@ -560,11 +777,11 @@ onUnmounted(() => {
 
 /* Staggered List Item Transitions */
 .staggered-list-enter-active {
-  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
   transition-delay: calc(var(--i) * 0.1s);
 }
 .staggered-list-leave-active {
-  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
   /* Reverse stagger for leaving? Or standard stagger. 
      Standard stagger works if items removed together and CSS delay applies. 
      But v-if removes all at once. The v-for trick handles this. */
@@ -586,7 +803,7 @@ onUnmounted(() => {
 /* Project Switch Parallax (Internal Toggle) */
 .project-switch-enter-active,
 .project-switch-leave-active {
-  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 1.0s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-switch-enter-from {

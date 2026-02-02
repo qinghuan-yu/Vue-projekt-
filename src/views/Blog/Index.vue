@@ -84,15 +84,26 @@ import { ref, computed } from 'vue';
 const activeTab = ref('tech');
 
 const archiveList = [
-  { id: 'tech', label: 'TECH NOTE', cn: '技术笔记', details: ['Vue3 Composition API Best Practices', 'WebGL & Three.js Integration', 'System Refactoring Log 2026'] },
-  { id: 'life', label: 'DAILY LIFE', cn: '生活随笔', details: ['Musings on Digital Art', 'Coffee Brewing 101', 'Midnight Coding Session'] },
-  { id: 'music', label: 'MUSIC PROD', cn: '音乐创作', details: ['Logic Pro X Workflow', 'Sound Design: Granular Synthesis', 'New Track: Neon Horizon'] },
+  { id: 'tech', label: 'TECH NOTE', cn: '技术笔记', details: ['Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'Sed do eiusmod tempor incididunt ut labore.', 'Ut enim ad minim veniam, quis nostrud exercitation.'] },
+  { id: 'life', label: 'DAILY LIFE', cn: '生活随笔', details: ['Duis aute irure dolor in reprehenderit.', 'Excepteur sint occaecat cupidatat non proident.', 'Sunt in culpa qui officia deserunt mollit.'] },
+  { id: 'music', label: 'MUSIC PROD', cn: '音乐创作', details: ['Nemo enim ipsam voluptatem quia voluptas sit.', 'Neque porro quisquam est, qui dolorem ipsum.', 'Quis autem vel eum iure reprehenderit qui.'] },
 ];
 
 const currentItem = computed(() => archiveList.find(i => i.id === activeTab.value));
 </script>
 
 <style scoped>
+/* Blog List Enter Animation */
+.staggered-list-enter-active,
+.staggered-list-leave-active {
+  transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.staggered-list-enter-from,
+.staggered-list-leave-to {
+  opacity: 0;
+  transform: translateX(-30px); /* Slide in from left */
+}
+
 .archive-container {
   min-height: 80vh;
   height: 100%;

@@ -22,8 +22,8 @@ const PARTICLE_SIZE_MAX = isMobile ? 2.0 : 2.2;
 
 // --- 变形 (MORPH) 配置 ---
 const MORPH_CONFIG = {
-    DRAG: 0.50,               // 阻力
-    EASE: 0.08,               // 弹簧拉力
+    DRAG: 0.60,               // 阻力 (Reduced friction slightly to allow more drift, but controlled)
+    EASE: 0.03,               // 弹簧拉力 (Lowered significantly for slower aggregation)
     THICKNESS: 50,           // 鼠标排斥力度参数
     
     // 斥力配置 (增强版)

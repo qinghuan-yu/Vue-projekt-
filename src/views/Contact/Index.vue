@@ -12,9 +12,9 @@
       <!-- Invisible Click Areas for 3 Icons -->
       <!-- Adjusted to match particle positions in useAdvancedParticles (Left, Center, Right) -->
       <div class="click-zones">
-         <a href="/collab/music" class="zone-item">
+         <a href="https://music.163.com/#/artist?id=100570638" target="_blank" class="zone-item">
             <div class="zone-label">MUSIC</div>
-            <div class="zone-sub">Netease / Bilibili</div>
+            <div class="zone-sub">MUSIC163</div>
          </a>
          
          <a href="mailto:Reliarc.me@outlook.com" class="zone-item">
@@ -62,10 +62,15 @@ const showIcons = async () => {
   if (!morphToShapes) return;
   
   // Pass 3 images to trigger the 3-column layout in useAdvancedParticles
+  // Increase sampleRate to normal (default was 4, lower = more pixels) or keep consistent
+  // If density is inconsistent, we can tweak sampleRate per image if needed,
+  // but usually sampleRate: 3 or 4 is good.
+  const commonOptions = { type: 'image', sampleRate: 3 }; 
+  
   await morphToShapes([
-    { source: musicPng, options: { type: 'image', sampleRate: 4 } },
-    { source: mailPng, options: { type: 'image', sampleRate: 4 } },
-    { source: githubPng, options: { type: 'image', sampleRate: 4 } }
+    { source: musicPng, options: commonOptions },
+    { source: mailPng, options: commonOptions },
+    { source: githubPng, options: commonOptions }
   ]);
 };
 
@@ -78,6 +83,7 @@ const showIcons = async () => {
   height: 100vh;
   overflow: hidden;
   background: black; 
+  font-family: 'Space Grotesk', sans-serif; /* Unified Font */
 }
 
 .visual-container {
@@ -116,7 +122,7 @@ const showIcons = async () => {
 }
 
 .sub-line {
-  font-family: monospace;
+  font-family: 'Space Grotesk', monospace;
   color: #22d3ee;
   margin-top: 12px;
 }
@@ -160,7 +166,7 @@ const showIcons = async () => {
 .zone-sub {
   color: rgba(255,255,255,0.5);
   font-size: 12px;
-  font-family: monospace;
+  font-family: 'Space Grotesk', monospace; 
 }
 
 /* Response to mobile */
