@@ -10,17 +10,113 @@
         padding: 0;
         background-color: #050505;
         overflow: hidden;
-        z-index: -9999;
+
       }
       #app {
         background-color: #050505;
         min-height: 100vh;
-        z-index: -9999;
+
       }
     </style>
   </head>
   <body>
+    <!-- App Level Loading Screen -->
+    <div id="app-loading">
+      <div class="loader-wrapper">
+        <div class="progress-container">
+          <div class="progress-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Styles & Logic -->
+    <style>
+      #app-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #050505;
+        z-index: 99999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.8s ease-out; /* Slightly faster fade out */
+        pointer-events: none;
+      }
+      
+      .loader-wrapper {
+        width: 600px; /* Wider progress bar */
+        position: relative;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      /* Progress Bar */
+      .progress-container {
+        width: 100%;
+        height: 2px;
+        background: rgba(255,255,255,0.1);
+        overflow: hidden;
+      }
+      
+      .progress-bar {
+        height: 100%;
+        background: #22d3ee; /* Cyan */
+        width: 0%;
+        animation: progressSim 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+
+      /* Progress Bar Fade */
+      #app-loading.bar-hidden .progress-container {
+        opacity: 0;
+        transition: opacity 0.6s ease;
+      }
+      
+      /* Overlay Fade */
+      #app-loading.finished {
+        opacity: 0;
+        transition: opacity 1.0s ease; /* Smooth overlay exit */
+      }
+
+      @keyframes progressSim {
+        0% { width: 0%; }
+        50% { width: 70%; }
+        100% { width: 100%; }
+      }
+    </style>
+
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
+    
+    <script>
+      (function() {
+        const loader = document.getElementById('app-loading');
+        
+        // 0s: Start
+        // 2.0s: Progress Complete
+        // 2.2s: Hide Progress Bar (Bar fades out)
+        // 2.8s: Hide Overlay (Overlay fades out)
+        // 3.8s: Done
+        
+        setTimeout(() => {
+           if(loader) {
+             // Step 1: Hide Bar
+             loader.classList.add('bar-hidden');
+             
+             // Step 2: Hide Overlay after bar is gone
+             setTimeout(() => {
+                loader.classList.add('finished');
+                
+                // Remove from DOM
+                setTimeout(() => { loader.style.display = 'none'; }, 1200);
+             }, 600); 
+           }
+        }, 2200); 
+      })();
+    </script>
   </body>
 </html>

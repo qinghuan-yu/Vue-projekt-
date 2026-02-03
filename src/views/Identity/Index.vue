@@ -3,16 +3,18 @@
     <!-- Content Layer -->
     <div class="layer-content">
       <div class="identity-wrapper">
-        <div class="profile-header page-exit-item" style="--exit-order: 0;">
+        <!-- 1. Title Group (First) -->
+        <h1 class="main-title stagger-item" style="--i: 1;">I am Relic<br><span class="blue-text">I am Ark</span></h1>
+
+        <!-- 2. Profile Tag & Details (Second) -->
+        <div class="profile-header stagger-item" style="--i: 8;">
           <div class="h-line-anim"></div>
           <span class="header-tag">Profile Authenticated</span>
         </div>
         
-        <h1 class="main-title page-exit-item" style="--exit-order: 1;">I am Relic<br><span class="blue-text">I am Ark</span></h1>
-        
         <div class="detail-grid">
           <div class="detail-left">
-            <div class="detail-item group page-exit-item" style="--exit-order: 2;">
+            <div class="detail-item group stagger-item" style="--i: 9;">
               <div class="icon-wrap">[MONITOR]</div>
               <div>
                 <p class="detail-sub">Status / Objective</p>
@@ -20,7 +22,7 @@
               </div>
             </div>
             
-            <div class="detail-item group page-exit-item" style="--exit-order: 3;">
+            <div class="detail-item group stagger-item" style="--i: 10;">
               <div class="icon-wrap">[MUSIC]</div>
               <div>
                 <p class="detail-sub">Artist IN</p>
@@ -30,7 +32,7 @@
           </div>
 
           <div class="detail-right">
-            <div class="signature-box page-exit-item" style="--exit-order: 4;">
+            <div class="signature-box stagger-item" style="--i: 11;">
                <p class="sig-label">Signature</p>
                <p class="sig-val" style="font-family: 'Noto Sans SC', serif;">清棫</p>
             </div>
@@ -49,21 +51,28 @@ onMounted(() => {
   // 检查是否是网站首次加载（整个会话的第一次访问）
   const isFirstVisit = !sessionStorage.getItem('hasVisited');
   const container = document.querySelector('.identity-container');
+  // App Loading Finished Time (approx 3.5s)
   
   if (isFirstVisit && container) {
-    // 标记为已访问
     sessionStorage.setItem('hasVisited', 'true');
-    
-    // 添加首次加载类，触发整体淡入动画
-    container.classList.add('first-load');
+    setTimeout(() => {
+        container.classList.add('animate-entry');
+    }, 3500); 
+  } else if (container) {
+    // 路由切换回来，立即播放同样的动画
+    // 给极短延迟确保 DOM ready
+    requestAnimationFrame(() => {
+         container.classList.add('animate-entry');
+    });
   }
   
   // 🔥 在后台预加载所有项目图片
-  PRELOAD_LIST.forEach(src => {
-    const img = new Image();
-    img.src = src;
-    // 浏览器会自动缓存这些图片，切换到 Projects 页面时无延迟
-  });
+  if(PRELOAD_LIST) {
+      PRELOAD_LIST.forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
+  }
 });
 </script>
 
@@ -77,28 +86,50 @@ onMounted(() => {
   height: 100%;
   position: relative;
   overflow: hidden;
-  opacity: 1; /* 默认完全显示 */
+  /* Default state handled by items */
 }
 
-/* 首次加载动画：整体从黑色淡入 */
-.identity-container.first-load {
-  animation: fadeInFromBlack 3.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+/* Stagger Animation System */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
-@keyframes fadeInFromBlack {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* When container has 'animate-entry', trigger children */
+.identity-container.animate-entry .stagger-item {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(var(--i) * 0.1s); /* Speed up base logic slightly */
 }
 
-/* Page exit stagger animation */
-.page-exit-item {
-  transition: opacity 0.6s ease, transform 0.6s ease;
-  transition-delay: calc(var(--exit-order) * 0.1s);
+/* 1. Title appears FIRST (Solo) */
+/* Instant or very fast */
+.identity-container.animate-entry .main-title.stagger-item {
+   transition-delay: 0.1s;
 }
+
+/* 2. Figure 2 Content - Layered Stagger */
+/* Profile Header (Top of Fig 2) */
+/* Shorter Gap: 1.4s -> 0.8s */
+.identity-container.animate-entry .profile-header.stagger-item {
+   transition-delay: 0.8s !important; 
+}
+
+/* Left Column Details (Monitor, Music) */
+.identity-container.animate-entry .detail-left .stagger-item:nth-child(1) {
+   transition-delay: 1.0s !important;
+}
+.identity-container.animate-entry .detail-left .stagger-item:nth-child(2) {
+   transition-delay: 1.2s !important;
+}
+
+/* Right Column (Signature) */
+.identity-container.animate-entry .signature-box.stagger-item {
+   transition-delay: 1.4s !important;
+}
+
+/* ... existing styles ... */
 
 .identity-container.page-leaving .page-exit-item {
   opacity: 0;

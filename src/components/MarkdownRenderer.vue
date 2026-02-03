@@ -1,7 +1,8 @@
 <template>
   <div class="renderer-container">
     <!-- Meta Header (Desc & Tags) -->
-    <div v-if="metadata.desc || (metadata.tags && metadata.tags.length)" class="post-meta-header">
+    <!-- Animation Order: Body First, then Header. We use classes to control delay. -->
+    <div v-if="metadata.desc || (metadata.tags && metadata.tags.length)" class="post-meta-header anim-delayed">
        <div v-if="metadata.desc" class="meta-desc">
           <span class="prefix">ABSTRACT //</span>
           <span class="desc-text">{{ metadata.desc }}</span>
@@ -19,7 +20,8 @@
        </div>
     </div>
 
-    <div class="markdown-body" v-html="htmlContent"></div>
+    <!-- Body Animation: First -->
+    <div class="markdown-body anim-first" v-html="htmlContent"></div>
   </div>
 </template>
 
@@ -112,6 +114,24 @@ watchEffect(() => {
 </script>
 
 <style>
+/* Animation Utilities for Content */
+@keyframes fadeInUpContent {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.anim-first {
+  opacity: 0;
+  animation: fadeInUpContent 0.8s ease forwards;
+  /* No delay or small delay */
+}
+
+.anim-delayed {
+  opacity: 0;
+  animation: fadeInUpContent 0.8s ease forwards;
+  animation-delay: 0.3s; /* Waits for body to start appearing */
+}
+
 /* Global Markdown Styles Override for Transparency */
 .markdown-body {
   background-color: transparent !important;
