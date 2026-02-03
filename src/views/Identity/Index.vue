@@ -77,7 +77,6 @@ onMounted(() => {
 
 .relic-text {
   color: #888888;
-  font-weight: 100;
 }
 
 .identity-container {
