@@ -45,7 +45,6 @@
 
 <script setup>
 import { onMounted } from 'vue';
-import { PRELOAD_LIST } from '@/config/assets';
 
 onMounted(() => {
   // 检查是否是网站首次加载（整个会话的第一次访问）
@@ -67,14 +66,6 @@ onMounted(() => {
     setTimeout(() => {
          container.classList.add('animate-entry');
     }, 100);
-  }
-  
-  // 🔥 在后台预加载所有项目图片
-  if(PRELOAD_LIST) {
-      PRELOAD_LIST.forEach(src => {
-        const img = new Image();
-        img.src = src;
-      });
   }
 });
 </script>
