@@ -85,7 +85,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import PixiBackground from '@/components/PixiBackground.vue';
 
@@ -155,35 +155,39 @@ const indicatorPosition = computed(() => {
 });
 
 // Generate random triangles for background
-const triangles = Array.from({ length: 30 }, (_, i) => {
-  const size = 3 + Math.random() * 20; 
-  const floatDuration = 18 + Math.random() * 20; 
-  const floatDelay = -Math.random() * 40; 
-  const left = Math.random() * 100;
+const triangles = ref([]);
+
+onMounted(() => {
+  triangles.value = Array.from({ length: 30 }, (_, i) => {
+    const size = 3 + Math.random() * 20; 
+    const floatDuration = 18 + Math.random() * 20; 
+    const floatDelay = -Math.random() * 40; 
+    const xPos = Math.random() * 100;
   
-  // Custom breathing/opacity behavior for each
-  const baseOpacity = 0.1 + Math.random() * 0.15;
-  const peakOpacity = baseOpacity + 0.3; // Increased breathing range
+    // Custom breathing/opacity behavior for each
+    const baseOpacity = 0.1 + Math.random() * 0.15;
+    const peakOpacity = baseOpacity + 0.3; // Increased breathing range
 
-  // Faster breathing cycle inside the movement (Sine wave simulation)
-  const pulseDuration = 2 + Math.random() * 4; 
-  const pulseDelay = -Math.random() * 10; // Random phase
+    // Faster breathing cycle inside the movement (Sine wave simulation)
+    const pulseDuration = 2 + Math.random() * 4; 
+    const pulseDelay = -Math.random() * 10; // Random phase
 
-  return {
-    id: i,
-    style: {
-      left: `${left}%`,
-      width: `${size}px`,
-      height: `${size}px`,
-      // Use CSS variables so we can use animation shorthand in CSS
-      '--float-duration': `${floatDuration}s`,
-      '--float-delay': `${floatDelay}s`,
-      '--pulse-duration': `${pulseDuration}s`,
-      '--pulse-delay': `${pulseDelay}s`,
-      '--base-opacity': baseOpacity,
-      '--peak-opacity': peakOpacity
-    }
-  };
+    return {
+      id: i,
+      style: {
+        width: `${size}px`,
+        height: `${size}px`,
+        // Use CSS variables so we can use animation shorthand in CSS
+        '--x-pos': `${xPos}vw`,
+        '--float-duration': `${floatDuration}s`,
+        '--float-delay': `${floatDelay}s`,
+        '--pulse-duration': `${pulseDuration}s`,
+        '--pulse-delay': `${pulseDelay}s`,
+        '--base-opacity': baseOpacity,
+        '--peak-opacity': peakOpacity
+      }
+    };
+  });
 });
 </script>
 
@@ -248,7 +252,8 @@ const triangles = Array.from({ length: 30 }, (_, i) => {
 
 .floating-triangle {
   position: absolute;
-  top: 110vh; /* Start below screen */
+  top: 0;
+  left: 0;
   background: transparent;
   width: 0;
   height: 0;
@@ -274,10 +279,10 @@ const triangles = Array.from({ length: 30 }, (_, i) => {
 /* Upward movement - strictly vertical */
 @keyframes float-up {
   0% {
-    transform: translateY(0);
+    transform: translate3d(var(--x-pos), 110vh, 0);
   }
   100% {
-    transform: translateY(-130vh);
+    transform: translate3d(var(--x-pos), -20vh, 0);
   }
 }
 
